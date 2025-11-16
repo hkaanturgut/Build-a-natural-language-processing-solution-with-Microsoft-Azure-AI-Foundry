@@ -1,0 +1,33 @@
+# Copy this file to terraform.tfvars and customize the values as needed
+
+# Azure subscription ID (get from .env file or set directly)
+subscription_id = "your-subscription-id-here"
+
+# Environment (dev, staging, prod)
+# This will be used in resource group name: rg-nlp-ai-foundry-{environment}
+environment = "dev"
+
+# Azure region where resources will be deployed
+location = "East US"
+
+# Storage account name for datasets (must be globally unique, 3-24 chars, lowercase letters and numbers only)
+# Will store invoices, logs, and NLP models
+storage_account_name = "stnlpdeveus001"
+
+# Azure AI Foundry workspace name
+# Used for NLP processing, document analysis, and AI model deployment
+ai_foundry_workspace_name = "aif-nlp-ai-foundry"
+
+# Key Vault name (must be globally unique, 3-24 chars, alphanumeric and hyphens)
+# Will store AI Foundry credentials and other secrets
+key_vault_name = "kv-nlp"
+
+# Tags to apply to all resources
+tags = {
+  Environment = "Development"
+  Project     = "NLP-AI-Foundry-Solution"
+  Owner       = "AI Team"
+  Purpose     = "Natural-Language-Processing"
+  Repository  = "Build-a-natural-language-processing-solution-with-Azure-AI-Foundry"
+  CreatedBy   = "Terraform"
+}
