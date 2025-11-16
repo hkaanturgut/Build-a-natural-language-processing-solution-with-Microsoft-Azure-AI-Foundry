@@ -1,0 +1,74 @@
+Invoice INV-1192
+Client: Orion Systems
+Item: Nano Battery Pack 12V
+Amount: 349.99
+
+Invoice INV-9921
+Client: Starfall Labs
+Item: Gravity Boots (pair)
+Amount: 129.50
+
+Invoice INV-5510
+Client: Quantum Forge
+Item: Plasma Cutter Pro
+Amount: 799.00
+
+Invoice INV-8840
+Client: Nebula Robotics
+Item: Hoverboard X3
+Amount: 499.99
+
+Invoice INV-7701
+Client: Cosmic Apparel Co.
+Item: Anti-Gravity Jacket Model A
+Amount: 249.75
+
+Invoice INV-6629
+Client: Vega Industrial
+Item: Thermal Shield Gloves (set of 3)
+Amount: 89.99
+
+Invoice INV-3302
+Client: Solar Sparks Engineering
+Item: Ion Lantern Portable
+Amount: 119.49
+
+Invoice INV-2091
+Client: Eclipse Freight
+Item: Power Cell Pack
+Amount: 59.99
+
+Invoice INV-4021
+Client: LunarTech Solutions
+Item: Zero-G Repair Kit
+Amount: 179.00
+
+Invoice INV-9914
+Client: AstroForge Mining
+Item: Reinforced Exosuit Belt
+Amount: 210.25
+
+Invoice INV-1237
+Client: Zenith Medical
+Item: Micro Plasma Scalpel
+Amount: 320.00
+
+Invoice INV-5018
+Client: Polaris Defense
+Item: Stealth Mesh Boots
+Amount: 412.10
+
+Invoice INV-7712
+Client: Horizon Manufacturing
+Item: Titanium Brace Frame
+Amount: 150.75
+
+Invoice INV-2908
+Client: CloudPrime Systems
+Item: Particle Screen Filter
+Amount: 95.40
+
+Invoice INV-7811
+Client: AeroFlux Transport
+Item: Cargo Gravity Stabilizer
+Amount: 650.00
