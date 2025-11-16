@@ -1,0 +1,15 @@
+# Azure AI Services and NLP dependencies
+azure-ai-textanalytics>=5.3.0
+azure-core>=1.28.0
+azure-identity>=1.15.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Data processing and utilities
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Optional: Jupyter notebook support
+jupyter>=1.0.0
+ipykernel>=6.25.0

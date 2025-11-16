@@ -29,8 +29,7 @@ output "storage_containers" {
   description = "Names of the created storage containers"
   value = {
     invoices = azurerm_storage_container.invoices.name
-    logs     = azurerm_storage_container.logs.name
-    models   = azurerm_storage_container.models.name
+    training = azurerm_storage_container.training.name
   }
 }
 
@@ -48,6 +47,12 @@ output "ai_services_endpoint" {
 output "ai_services_id" {
   description = "ID of the Azure AI Services resource"
   value       = azurerm_ai_services.main.id
+}
+
+output "ai_services_key" {
+  description = "Primary access key for Azure AI Services"
+  value       = azurerm_ai_services.main.primary_access_key
+  sensitive   = true
 }
 
 # Azure AI Foundry Outputs
@@ -115,5 +120,37 @@ output "connection_info" {
     ai_foundry_project  = azurerm_ai_foundry_project.main.name
     ai_services         = azurerm_ai_services.main.name
     environment         = var.environment
+  }
+}
+
+# Storage connection string for .env generation
+output "storage_connection_string" {
+  description = "Azure Storage connection string"
+  value       = azurerm_storage_account.datasets.primary_connection_string
+  sensitive   = true
+}
+
+# .env file generation
+output "env_file_path" {
+  description = "Path to the generated .env file"
+  value       = local_file.env_file.filename
+}
+
+# Uploaded data files
+output "uploaded_data_files" {
+  description = "Information about uploaded data files"
+  value = {
+    invoices_data = {
+      name = azurerm_storage_blob.invoices_data.name
+      url  = azurerm_storage_blob.invoices_data.url
+    }
+    pii_samples_data = {
+      name = azurerm_storage_blob.pii_samples_data.name
+      url  = azurerm_storage_blob.pii_samples_data.url
+    }
+    clu_training_data = {
+      name = azurerm_storage_blob.clu_training_data.name
+      url  = azurerm_storage_blob.clu_training_data.url
+    }
   }
 }

@@ -7,6 +7,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~>4.0"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~>2.4"
+    }
   }
 }
 
@@ -80,16 +84,8 @@ resource "azurerm_storage_container" "invoices" {
   depends_on = [azurerm_storage_account.datasets]
 }
 
-resource "azurerm_storage_container" "logs" {
-  name                 = "logs"
-  storage_account_name = azurerm_storage_account.datasets.name
-  container_access_type = "private"
-  
-  depends_on = [azurerm_storage_account.datasets]
-}
-
-resource "azurerm_storage_container" "models" {
-  name                 = "models"
+resource "azurerm_storage_container" "training" {
+  name                 = "training"
   storage_account_name = azurerm_storage_account.datasets.name
   container_access_type = "private"
   
@@ -254,3 +250,64 @@ resource "azurerm_key_vault_secret" "storage_connection_string" {
     azurerm_storage_account.datasets
   ]
 }
+
+# Generate .env file for Python applications automatically
+resource "local_file" "env_file" {
+  content = templatefile("${path.module}/templates/env.tpl", {
+    ai_services_endpoint  = azurerm_ai_services.main.endpoint
+    ai_services_key       = azurerm_ai_services.main.primary_access_key
+    key_vault_uri         = azurerm_key_vault.main.vault_uri
+    storage_connection    = azurerm_storage_account.datasets.primary_connection_string
+    resource_group        = azurerm_resource_group.main.name
+    ai_foundry_id         = azurerm_ai_foundry.main.id
+    ai_foundry_project_id = azurerm_ai_foundry_project.main.id
+  })
+  filename             = "${path.module}/../python/.env"
+  file_permission      = "0644"
+  directory_permission = "0755"
+  
+  depends_on = [
+    azurerm_ai_services.main,
+    azurerm_key_vault.main,
+    azurerm_storage_account.datasets,
+    azurerm_ai_foundry.main,
+    azurerm_ai_foundry_project.main,
+    azurerm_key_vault_secret.ai_services_endpoint,
+    azurerm_key_vault_secret.storage_connection_string
+  ]
+}
+
+# Upload data files to appropriate storage containers
+resource "azurerm_storage_blob" "invoices_data" {
+  name                   = "invoices.txt"
+  storage_account_name   = azurerm_storage_account.datasets.name
+  storage_container_name = azurerm_storage_container.invoices.name
+  type                   = "Block"
+  source                 = "${path.module}/../data/invoices.txt"
+  content_type          = "text/plain"
+
+  depends_on = [azurerm_storage_container.invoices]
+}
+
+resource "azurerm_storage_blob" "pii_samples_data" {
+  name                   = "pii_samples.txt"
+  storage_account_name   = azurerm_storage_account.datasets.name
+  storage_container_name = azurerm_storage_container.training.name
+  type                   = "Block"
+  source                 = "${path.module}/../data/pii_samples.txt"
+  content_type          = "text/plain"
+
+  depends_on = [azurerm_storage_container.training]
+}
+
+resource "azurerm_storage_blob" "clu_training_data" {
+  name                   = "clu_training_utterances.md"
+  storage_account_name   = azurerm_storage_account.datasets.name
+  storage_container_name = azurerm_storage_container.training.name
+  type                   = "Block"
+  source                 = "${path.module}/../data/clu_training_utterances.md"
+  content_type          = "text/markdown"
+
+  depends_on = [azurerm_storage_container.training]
+}
+
