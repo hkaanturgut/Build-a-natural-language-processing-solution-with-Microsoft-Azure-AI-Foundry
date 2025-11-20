@@ -140,19 +140,20 @@ resource "azurerm_role_assignment" "current_user_kv_admin" {
   depends_on = [azurerm_key_vault.main]
 }
 
-# Deploy Azure AI Foundry
-resource "azurerm_ai_foundry" "main" {
-  name                = "aif-nlp-dev-${local.location_short[var.location]}-001"
+# Deploy Azure AI Language service for Custom NER and CLU
+resource "azurerm_cognitive_account" "language" {
+  name                = "lang-nlp-dev-${local.location_short[var.location]}-001"
   location            = var.location
   resource_group_name = azurerm_resource_group.main.name
+  kind                = "TextAnalytics"
+  sku_name            = "S"
 
-  # Associate with storage and key vault
-  storage_account_id = azurerm_storage_account.datasets.id
-  key_vault_id       = azurerm_key_vault.main.id
-
+  # Enable Custom features (NER, CLU)
+  custom_subdomain_name = "lang-nlp-dev-${local.location_short[var.location]}-001"
+  
   # Network settings
-  public_network_access = "Enabled"
-
+  public_network_access_enabled = true
+  
   # Managed identity for secure access
   identity {
     type = "SystemAssigned"
@@ -168,62 +169,37 @@ resource "azurerm_ai_foundry" "main" {
   ]
 }
 
-# Grant Key Vault Secrets User role to AI Foundry managed identity
-resource "azurerm_role_assignment" "ai_foundry_kv_secrets_user" {
+# Grant Key Vault Secrets User role to Language service managed identity
+resource "azurerm_role_assignment" "language_kv_secrets_user" {
   scope                = azurerm_key_vault.main.id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_ai_foundry.main.identity[0].principal_id
+  principal_id         = azurerm_cognitive_account.language.identity[0].principal_id
 
-  depends_on = [azurerm_ai_foundry.main]
-}
-
-# Deploy Azure AI Foundry Project
-resource "azurerm_ai_foundry_project" "main" {
-  name                  = "aifp-nlp-dev-${local.location_short[var.location]}-001"
-  location              = var.location
-  ai_services_hub_id    = azurerm_ai_foundry.main.id
-
-  # Managed identity for secure access
-  identity {
-    type = "SystemAssigned"
-  }
-
-  tags = var.tags
-  
-  depends_on = [azurerm_ai_foundry.main]
-}
-
-# Grant Key Vault Secrets User role to AI Foundry Project managed identity
-resource "azurerm_role_assignment" "ai_foundry_project_kv_secrets_user" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_ai_foundry_project.main.identity[0].principal_id
-
-  depends_on = [azurerm_ai_foundry_project.main]
+  depends_on = [azurerm_cognitive_account.language]
 }
 
 # Store important information in Key Vault
-resource "azurerm_key_vault_secret" "ai_foundry_id" {
-  name         = "ai-foundry-id"
-  value        = azurerm_ai_foundry.main.id
+resource "azurerm_key_vault_secret" "language_service_id" {
+  name         = "language-service-id"
+  value        = azurerm_cognitive_account.language.id
   key_vault_id = azurerm_key_vault.main.id
   tags         = var.tags
 
   depends_on = [
     azurerm_role_assignment.current_user_kv_admin,
-    azurerm_ai_foundry.main
+    azurerm_cognitive_account.language
   ]
 }
 
-resource "azurerm_key_vault_secret" "ai_foundry_project_id" {
-  name         = "ai-foundry-project-id"
-  value        = azurerm_ai_foundry_project.main.id
+resource "azurerm_key_vault_secret" "language_service_endpoint" {
+  name         = "language-service-endpoint"
+  value        = azurerm_cognitive_account.language.endpoint
   key_vault_id = azurerm_key_vault.main.id
   tags         = var.tags
 
   depends_on = [
     azurerm_role_assignment.current_user_kv_admin,
-    azurerm_ai_foundry_project.main
+    azurerm_cognitive_account.language
   ]
 }
 
@@ -254,13 +230,14 @@ resource "azurerm_key_vault_secret" "storage_connection_string" {
 # Generate .env file for Python applications automatically
 resource "local_file" "env_file" {
   content = templatefile("${path.module}/templates/env.tpl", {
-    ai_services_endpoint  = azurerm_ai_services.main.endpoint
-    ai_services_key       = azurerm_ai_services.main.primary_access_key
-    key_vault_uri         = azurerm_key_vault.main.vault_uri
-    storage_connection    = azurerm_storage_account.datasets.primary_connection_string
-    resource_group        = azurerm_resource_group.main.name
-    ai_foundry_id         = azurerm_ai_foundry.main.id
-    ai_foundry_project_id = azurerm_ai_foundry_project.main.id
+    ai_services_endpoint    = azurerm_ai_services.main.endpoint
+    ai_services_key         = azurerm_ai_services.main.primary_access_key
+    language_endpoint       = azurerm_cognitive_account.language.endpoint
+    language_key           = azurerm_cognitive_account.language.primary_access_key
+    key_vault_uri          = azurerm_key_vault.main.vault_uri
+    storage_connection     = azurerm_storage_account.datasets.primary_connection_string
+    resource_group         = azurerm_resource_group.main.name
+    language_service_id    = azurerm_cognitive_account.language.id
   })
   filename             = "${path.module}/../python/.env"
   file_permission      = "0644"
@@ -268,11 +245,11 @@ resource "local_file" "env_file" {
   
   depends_on = [
     azurerm_ai_services.main,
+    azurerm_cognitive_account.language,
     azurerm_key_vault.main,
     azurerm_storage_account.datasets,
-    azurerm_ai_foundry.main,
-    azurerm_ai_foundry_project.main,
     azurerm_key_vault_secret.ai_services_endpoint,
+    azurerm_key_vault_secret.language_service_endpoint,
     azurerm_key_vault_secret.storage_connection_string
   ]
 }
