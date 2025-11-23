@@ -70,6 +70,15 @@ resource "azurerm_storage_container" "training" {
   depends_on = [azurerm_storage_account.datasets]
 }
 
+
+resource "azurerm_storage_container" "reports" {
+  name                  = "reports"
+  storage_account_name  = azurerm_storage_account.datasets.name
+  container_access_type = "private"
+
+  depends_on = [azurerm_storage_account.datasets]
+}
+
 # Deploy Azure AI Services resource
 resource "azurerm_ai_services" "main" {
   name                = "ais-nlp-dev-${local.location_short[var.location]}-001"
