@@ -1,6 +1,3 @@
-
-
-
 from dotenv import load_dotenv
 import os
 import csv
@@ -35,13 +32,16 @@ client = authenticate_client()
 
 # Fetch invoice files from Azure Storage
 def fetch_invoices_from_storage(container_name="invoices", blob_name="invoices.txt"):
-    blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
-    container_client = blob_service_client.get_container_client(container_name)
-    blob_client = container_client.get_blob_client(blob_name)
-    invoices_data = blob_client.download_blob().readall().decode("utf-8")
-    # Split by document separator if needed, here assuming one invoice per line
-    invoices = [line for line in invoices_data.splitlines() if line.strip()]
-    return invoices
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
+        container_client = blob_service_client.get_container_client(container_name)
+        blob_client = container_client.get_blob_client(blob_name)
+        invoices_data = blob_client.download_blob().readall().decode("utf-8")
+        invoices = [line for line in invoices_data.splitlines() if line.strip()]
+        return invoices
+    except Exception as err:
+        print(f"Warning: Could not fetch invoices from storage: {err}")
+        return []
 
 # Define custom entities for extraction
 CUSTOM_ENTITIES = [
@@ -78,30 +78,34 @@ def entity_recognition_example(client, documents):
                         "Length": entity.length,
                         "Confidence": f"{entity.confidence_score * 100:.2f}%",
                         "Tags": tags_str,
-                        "Metadata Name": metadata_name,
-                        "Metadata Value": metadata_value
                     })
         except Exception as err:
             print(f"  Encountered exception in batch {i//batch_size + 1}: {err}")
 
-    print("Step 2: Writing extracted entities to CSV file...")
+    print("Step 2: Writing extracted entities to CSV and uploading to Azure Storage...")
+    import io
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_file = f"entity_extraction_results_{timestamp}.csv"
-    with open(csv_file, mode="w", newline='', encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=[
-            "Document Number", "Entity Text", "Type", "Offset", "Length", "Confidence", "Tags", "Metadata Name", "Metadata Value"
-        ])
-        writer.writeheader()
-        writer.writerows(csv_rows)
-    print(f"  Entity extraction results exported to {csv_file}")
-
+    csv_buffer = io.StringIO()
+    writer = csv.DictWriter(csv_buffer, fieldnames=[
+        "Document Number", "Entity Text", "Type", "Offset", "Length", "Confidence", "Tags"
+    ])
+    writer.writeheader()
+    writer.writerows(csv_rows)
+    csv_data = csv_buffer.getvalue().encode("utf-8")
     print("Step 3: Uploading CSV report to Azure Storage container 'reports'...")
     try:
         blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
         reports_container = "reports"
         blob_client = blob_service_client.get_blob_client(container=reports_container, blob=csv_file)
-        with open(csv_file, "rb") as data:
-            blob_client.upload_blob(data, overwrite=True)
+        blob_client.upload_blob(csv_data, overwrite=True)
         print(f"  CSV report uploaded to Azure Storage container '{reports_container}' as '{csv_file}'")
     except Exception as err:
         print(f"  Failed to upload CSV to Azure Storage: {err}")
+
+if __name__ == "__main__":
+    print("Starting Azure invoice entity extraction workflow...")
+    invoices = fetch_invoices_from_storage()
+    print(f"Loaded {len(invoices)} invoice documents from Azure Storage.")
+    print("Custom entities to extract:", CUSTOM_ENTITIES)
+    entity_recognition_example(client, invoices)
