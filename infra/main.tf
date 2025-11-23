@@ -277,6 +277,31 @@ resource "azurerm_key_vault_secret" "ai_foundry_id" {
   ]
 }
 
+# Add GPT-5 Chat model secrets for Python usage
+resource "azurerm_key_vault_secret" "gpt_5_chat_key" {
+  name         = "gpt-5-chat-key"
+  value        = azurerm_ai_services.main.primary_access_key
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    azurerm_ai_services.main
+  ]
+}
+
+resource "azurerm_key_vault_secret" "gpt_5_chat_endpoint" {
+  name         = "gpt-5-chat-endpoint"
+  value        = "https://${azurerm_ai_foundry.main.name}.openai.azure.com/openai/deployments/${azapi_resource.aifoundry_deployment_gpt_5_chat.name}"
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    azapi_resource.aifoundry_deployment_gpt_5_chat
+  ]
+}
+
 resource "azurerm_key_vault_secret" "key_vault_uri" {
   name         = "key-vault-uri"
   value        = azurerm_key_vault.main.vault_uri
