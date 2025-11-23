@@ -292,7 +292,7 @@ resource "azurerm_key_vault_secret" "gpt_5_chat_key" {
 
 resource "azurerm_key_vault_secret" "gpt_5_chat_endpoint" {
   name         = "gpt-5-chat-endpoint"
-  value        = "https://${azurerm_ai_services.main.name}.cognitiveservices.azure.com/openai/deployments/${azapi_resource.aifoundry_deployment_gpt_5_chat.name}/chat/completions?api-version=2025-01-01-preview"
+  value        = "https://${azurerm_ai_services.main.name}.cognitiveservices.azure.com/"
   key_vault_id = azurerm_key_vault.main.id
   tags         = var.tags
 
