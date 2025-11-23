@@ -56,31 +56,34 @@ output "ai_services_key" {
 }
 
 # Azure AI Language Service Outputs
-output "language_service_name" {
-  description = "Name of the Azure AI Language service"
-  value       = azurerm_cognitive_account.language.name
+
+# Azure AI Foundry Outputs
+output "ai_foundry_name" {
+  description = "Name of the Azure AI Foundry service"
+  value       = azurerm_ai_foundry.main.name
 }
 
-output "language_service_id" {
-  description = "ID of the Azure AI Language service"
-  value       = azurerm_cognitive_account.language.id
+output "ai_foundry_id" {
+  description = "ID of the Azure AI Foundry service"
+  value       = azurerm_ai_foundry.main.id
 }
 
-output "language_service_endpoint" {
-  description = "Endpoint of the Azure AI Language service"
-  value       = azurerm_cognitive_account.language.endpoint
+output "ai_foundry_location" {
+  description = "Location of the Azure AI Foundry service"
+  value       = azurerm_ai_foundry.main.location
 }
 
-output "language_service_location" {
-  description = "Location of the Azure AI Language service"
-  value       = azurerm_cognitive_account.language.location
+# Azure AI Foundry Project Outputs
+output "ai_foundry_project_name" {
+  description = "Name of the Azure AI Foundry project"
+  value       = azurerm_ai_foundry_project.main.name
 }
 
-output "language_service_key" {
-  description = "Primary access key for Azure AI Language service"
-  value       = azurerm_cognitive_account.language.primary_access_key
-  sensitive   = true
+output "ai_foundry_project_id" {
+  description = "ID of the Azure AI Foundry project"
+  value       = azurerm_ai_foundry_project.main.id
 }
+
 
 # Key Vault Outputs
 output "key_vault_name" {
@@ -102,8 +105,8 @@ output "key_vault_id" {
 output "secret_names" {
   description = "Names of secrets stored in Key Vault"
   value = {
-    language_service_id       = azurerm_key_vault_secret.language_service_id.name
-    language_service_endpoint = azurerm_key_vault_secret.language_service_endpoint.name
+  # language_service_id       = azurerm_key_vault_secret.language_service_id.name
+  # language_service_endpoint = azurerm_key_vault_secret.language_service_endpoint.name
     ai_services_endpoint      = azurerm_key_vault_secret.ai_services_endpoint.name
     storage_connection_string = azurerm_key_vault_secret.storage_connection_string.name
   }
@@ -113,12 +116,12 @@ output "secret_names" {
 output "connection_info" {
   description = "Connection information for applications"
   value = {
-    resource_group      = azurerm_resource_group.main.name
-    key_vault_name      = azurerm_key_vault.main.name
-    storage_account     = azurerm_storage_account.datasets.name
-    language_service    = azurerm_cognitive_account.language.name
-    ai_services         = azurerm_ai_services.main.name
-    environment         = var.environment
+    resource_group   = azurerm_resource_group.main.name
+    key_vault_name   = azurerm_key_vault.main.name
+    storage_account  = azurerm_storage_account.datasets.name
+  # language_service = azurerm_cognitive_account.language.name
+    ai_services      = azurerm_ai_services.main.name
+    environment      = var.environment
   }
 }
 
@@ -127,12 +130,6 @@ output "storage_connection_string" {
   description = "Azure Storage connection string"
   value       = azurerm_storage_account.datasets.primary_connection_string
   sensitive   = true
-}
-
-# .env file generation
-output "env_file_path" {
-  description = "Path to the generated .env file"
-  value       = local_file.env_file.filename
 }
 
 # Uploaded data files

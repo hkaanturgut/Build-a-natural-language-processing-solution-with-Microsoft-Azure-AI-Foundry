@@ -6,10 +6,6 @@
 AZURE_AI_SERVICES_ENDPOINT=${ai_services_endpoint}
 AZURE_AI_SERVICES_KEY=${ai_services_key}
 
-# Azure AI Language Service (Custom NER, CLU, Intent Classification)
-AZURE_LANGUAGE_ENDPOINT=${language_endpoint}
-AZURE_LANGUAGE_KEY=${language_key}
-AZURE_LANGUAGE_SERVICE_ID=${language_service_id}
 
 # Azure Key Vault
 AZURE_KEY_VAULT_URI=${key_vault_uri}
@@ -26,7 +22,3 @@ ENVIRONMENT=development
 # For backward compatibility with existing code
 ENDPOINT=${ai_services_endpoint}
 KEY=${ai_services_key}
-
-# Language service compatibility
-LANGUAGE_ENDPOINT=${language_endpoint}
-LANGUAGE_KEY=${language_key}

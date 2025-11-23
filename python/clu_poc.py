@@ -1,13 +1,19 @@
 import sys
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.language.conversations import ConversationAnalysisClient
-from dotenv import load_dotenv
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 
-# Load environment variables from .env file
-load_dotenv()
+# Bootstrap: get Key Vault URI from a well-known secret
+BOOTSTRAP_KEY_VAULT_URI = "https://kv-nlp-dev-eus2-001.vault.azure.net/"  # Only for first fetch
+credential = DefaultAzureCredential()
+bootstrap_client = SecretClient(vault_url=BOOTSTRAP_KEY_VAULT_URI, credential=credential)
+key_vault_uri = bootstrap_client.get_secret("key-vault-uri").value
 
-ENDPOINT = os.getenv("AZURE_AI_SERVICES_ENDPOINT") or os.getenv("ENDPOINT")
-KEY = os.getenv("AZURE_AI_SERVICES_KEY") or os.getenv("KEY")
+# Now use the discovered Key Vault URI for all other secrets
+client_kv = SecretClient(vault_url=key_vault_uri, credential=credential)
+ENDPOINT = client_kv.get_secret("ai-services-endpoint").value
+KEY = client_kv.get_secret("ai-services-key").value
 PROJECT_NAME = "galaxyOrderAssistant"
 DEPLOYMENT_NAME = "galaxyOrderAssistant"
 
