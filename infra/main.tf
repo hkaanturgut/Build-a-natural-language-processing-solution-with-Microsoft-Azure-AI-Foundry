@@ -1,21 +1,7 @@
-
-
-
-# Location mapping for short names
-locals {
-  location_short = {
-    "East US"    = "eus"
-    "West US"    = "wus"
-    "East US 2"  = "eus2"
-    "West US 2"  = "wus2"
-    "Central US" = "cus"
-  }
-}
-
 # Create Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-nlp-ai-foundry-${var.environment}"
-  location = "East US 2"
+  name     = "rg-ai-${local.location_short[var.location]}-${var.environment}-001"
+  location = var.location
   tags     = var.tags
 }
 
@@ -53,10 +39,29 @@ resource "azurerm_storage_account" "datasets" {
   depends_on = [azurerm_resource_group.main]
 }
 
+# Location code variable
+
+locals {
+  location_short = {
+    "East US"        = "eus"
+    "East US 2"      = "eus2"
+    "Central US"     = "cus"
+    "West US"        = "wus"
+    "West US 2"      = "wus2"
+    "North Europe"   = "neu"
+    "West Europe"    = "weu"
+    "Southeast Asia" = "sea"
+    "East Asia"      = "eas"
+  }
+}
+variable "location_code" {
+  type    = string
+  default = "eus2"
+}
 # Create containers for different data types
 resource "azurerm_storage_container" "invoices" {
   name                  = "invoices"
-  storage_account_name  = azurerm_storage_account.datasets.name
+  storage_account_id    = azurerm_storage_account.datasets.id
   container_access_type = "private"
 
   depends_on = [azurerm_storage_account.datasets]
@@ -64,7 +69,7 @@ resource "azurerm_storage_container" "invoices" {
 
 resource "azurerm_storage_container" "training" {
   name                  = "training"
-  storage_account_name  = azurerm_storage_account.datasets.name
+  storage_account_id    = azurerm_storage_account.datasets.id
   container_access_type = "private"
 
   depends_on = [azurerm_storage_account.datasets]
@@ -73,7 +78,7 @@ resource "azurerm_storage_container" "training" {
 
 resource "azurerm_storage_container" "reports" {
   name                  = "reports"
-  storage_account_name  = azurerm_storage_account.datasets.name
+  storage_account_id    = azurerm_storage_account.datasets.id
   container_access_type = "private"
 
   depends_on = [azurerm_storage_account.datasets]
@@ -81,13 +86,13 @@ resource "azurerm_storage_container" "reports" {
 
 # Deploy Azure AI Services resource
 resource "azurerm_ai_services" "main" {
-  name                = "ais-nlp-dev-${local.location_short[var.location]}-001"
+  name                = "ais-${var.environment}-${local.location_short[var.location]}-001"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   sku_name            = "S0"
 
   # Set custom subdomain for API access
-  custom_subdomain_name = "ais-nlp-dev-${local.location_short[var.location]}-001"
+  custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-001"
 
   # Network and authentication settings
   public_network_access              = "Enabled"
@@ -101,14 +106,14 @@ resource "azurerm_ai_services" "main" {
 
 # Deploy Azure Key Vault with RBAC
 resource "azurerm_key_vault" "main" {
-  name                = "kv-nlp-dev-${local.location_short[var.location]}-002"
+  name                = "kv-${var.environment}-${local.location_short[var.location]}-ai-001"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "standard"
 
   # Enable RBAC authorization instead of access policies
-  enable_rbac_authorization     = true
+  rbac_authorization_enabled     = true
   public_network_access_enabled = true
   purge_protection_enabled      = true
   soft_delete_retention_days    = 90
@@ -119,79 +124,67 @@ resource "azurerm_key_vault" "main" {
 }
 
 # Grant Key Vault Administrator role to current user
-resource "azurerm_role_assignment" "current_user_kv_admin" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azurerm_client_config.current.object_id
 
-  depends_on = [azurerm_key_vault.main]
+
+
+resource "azurerm_cognitive_account" "language" {
+  name                = "lang-${var.environment}-${local.location_short[var.location]}-001"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "TextAnalytics"
+  sku_name            = "S"
+
+  # Enable Custom features (NER, CLU)
+  custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-001"
+
+  # Network settings
+  public_network_access_enabled = true
+
+  storage {
+    storage_account_id = azurerm_storage_account.datasets.id
+  }
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = var.tags
+
+  depends_on = [
+    azurerm_resource_group.main,
+    azurerm_storage_account.datasets,
+    azurerm_key_vault.main,
+    azurerm_role_assignment.current_user_kv_admin
+  ]
 }
 
 
-# --- LANGUAGE RELATED RESOURCES COMMENTED OUT ---
-# resource "azurerm_cognitive_account" "language" {
-#   name                = "lang-nlp-dev-${local.location_short[var.location]}-001"
-#   location            = azurerm_resource_group.main.location
-#   resource_group_name = azurerm_resource_group.main.name
-#   kind                = "TextAnalytics"
-#   sku_name            = "S"
-#
-#   # Enable Custom features (NER, CLU)
-#   custom_subdomain_name = "lang-nlp-dev-${local.location_short[var.location]}-001"
-#
-#   # Network settings
-#   public_network_access_enabled = true
-#
-#   # Managed identity for secure access
-#   identity {
-#     type = "SystemAssigned"
-#   }
-#
-#   tags = var.tags
-#
-#   depends_on = [
-#     azurerm_resource_group.main,
-#     azurerm_storage_account.datasets,
-#     azurerm_key_vault.main,
-#     azurerm_role_assignment.current_user_kv_admin
-#   ]
-# }
-#
-# resource "azurerm_role_assignment" "language_kv_secrets_user" {
-#   scope                = azurerm_key_vault.main.id
-#   role_definition_name = "Key Vault Secrets User"
-#   principal_id         = azurerm_cognitive_account.language.identity[0].principal_id
-#
-#   depends_on = [azurerm_cognitive_account.language]
-# }
-#
-# resource "azurerm_key_vault_secret" "language_service_id" {
-#   name         = "language-service-id"
-#   value        = azurerm_cognitive_account.language.id
-#   key_vault_id = azurerm_key_vault.main.id
-#   tags         = var.tags
-#
-#   depends_on = [
-#     azurerm_role_assignment.current_user_kv_admin,
-#     azurerm_cognitive_account.language
-#   ]
-# }
-#
-# resource "azurerm_key_vault_secret" "language_service_endpoint" {
-#   name         = "language-service-endpoint"
-#   value        = azurerm_cognitive_account.language.endpoint
-#   key_vault_id = azurerm_key_vault.main.id
-#   tags         = var.tags
-#
-#   depends_on = [
-#     azurerm_role_assignment.current_user_kv_admin,
-#     azurerm_cognitive_account.language
-#   ]
-# }
+
+resource "azurerm_key_vault_secret" "language_service_id" {
+  name         = "language-service-id"
+  value        = azurerm_cognitive_account.language.id
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    azurerm_cognitive_account.language
+  ]
+}
+
+resource "azurerm_key_vault_secret" "language_service_endpoint" {
+  name         = "language-service-endpoint"
+  value        = azurerm_cognitive_account.language.endpoint
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    azurerm_cognitive_account.language
+  ]
+}
 
 # Deploy Azure AI Foundry
 resource "azurerm_ai_foundry" "main" {
-  name                = "aif-nlp-dev-eus2-001"
+  name                = "aif-${var.environment}-${local.location_short[var.location]}-001"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -210,11 +203,29 @@ resource "azurerm_ai_foundry" "main" {
   tags = var.tags
 
   depends_on = [
-    azurerm_resource_group.main,
+
     azurerm_storage_account.datasets,
     azurerm_key_vault.main,
     azurerm_role_assignment.current_user_kv_admin
   ]
+}
+
+
+
+# Deploy Azure AI Foundry Project
+resource "azurerm_ai_foundry_project" "main" {
+  name               = "aifp-${var.environment}-${local.location_short[var.location]}-001"
+  location           = azurerm_resource_group.main.location
+  ai_services_hub_id = azurerm_ai_foundry.main.id
+
+  # Managed identity for secure access
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = var.tags
+
+  depends_on = [azurerm_ai_foundry.main]
 }
 
 # Deploy GPT-5-Chat model in AI Foundry using azapi_resource
@@ -222,7 +233,10 @@ resource "azapi_resource" "aifoundry_deployment_gpt_5_chat" {
   type       = "Microsoft.CognitiveServices/accounts/deployments@2023-05-01"
   name       = "gpt-5-chat"
   parent_id  = azurerm_ai_services.main.id
-  depends_on = [azurerm_ai_foundry.main]
+  depends_on = [
+    azurerm_ai_services.main,
+    azurerm_ai_foundry.main
+  ]
 
   body = {
     sku = {
@@ -239,39 +253,6 @@ resource "azapi_resource" "aifoundry_deployment_gpt_5_chat" {
   }
 }
 
-# Grant Key Vault Secrets User role to AI Foundry managed identity
-resource "azurerm_role_assignment" "ai_foundry_kv_secrets_user" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_ai_foundry.main.identity[0].principal_id
-
-  depends_on = [azurerm_ai_foundry.main]
-}
-
-# Deploy Azure AI Foundry Project
-resource "azurerm_ai_foundry_project" "main" {
-  name               = "aifp-nlp-dev-eus2-001"
-  location           = azurerm_resource_group.main.location
-  ai_services_hub_id = azurerm_ai_foundry.main.id
-
-  # Managed identity for secure access
-  identity {
-    type = "SystemAssigned"
-  }
-
-  tags = var.tags
-
-  depends_on = [azurerm_ai_foundry.main]
-}
-
-# Grant Key Vault Secrets User role to AI Foundry Project managed identity
-resource "azurerm_role_assignment" "ai_foundry_project_kv_secrets_user" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_ai_foundry_project.main.identity[0].principal_id
-
-  depends_on = [azurerm_ai_foundry_project.main]
-}
 
 # Store important information in Key Vault
 resource "azurerm_key_vault_secret" "ai_foundry_id" {
@@ -395,14 +376,34 @@ resource "azurerm_storage_blob" "clu_training_data" {
   depends_on = [azurerm_storage_container.training]
 }
 
-  # Seamless automation: update .env file with Key Vault URI after apply
-  resource "null_resource" "update_env_file" {
-    provisioner "local-exec" {
-      command = "${path.module}/../update-env.sh"
-    }
-
-    triggers = {
-      key_vault_uri = azurerm_key_vault.main.vault_uri
-    }
+# Seamless automation: update .env file with Key Vault URI after apply
+resource "null_resource" "update_env_file" {
+  provisioner "local-exec" {
+    command = "${path.module}/../update-env.sh"
   }
+
+  triggers = {
+    key_vault_uri = azurerm_key_vault.main.vault_uri
+  }
+}
+
+# resource "azapi_resource" "language_service_connection" {
+#   type      = "Microsoft.CognitiveServices/accounts/connections@2025-06-01"
+#   name      = "language-service-connection"
+#   parent_id = azurerm_cognitive_account.language.id
+#   location  = azurerm_resource_group.main.location
+
+#   body = {
+#     properties = {
+#       category    = "CognitiveService"
+#       authType    = "ApiKey"
+#       target      = azurerm_cognitive_account.language.endpoint
+#       credentials = {
+#         key = azurerm_cognitive_account.language.primary_access_key
+#       }
+#       # Optionally add metadata, expiryTime, etc.
+#     }
+#   }
+#   depends_on = [azurerm_cognitive_account.language]
+# }
 

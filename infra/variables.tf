@@ -24,7 +24,7 @@ variable "location" {
 variable "storage_account_name" {
   description = "Name of the storage account for datasets (must be globally unique)"
   type        = string
-  default     = "stnlpdeveus001"
+  default     = "staideveus2001"
 
   validation {
     condition     = can(regex("^[a-z0-9]{3,24}$", var.storage_account_name))

@@ -60,24 +60,48 @@ def entity_recognition_example(client, documents):
             print(f"  Processing batch {i//batch_size + 1} (documents {i+1} to {min(i+batch_size, len(documents))})...")
             batch = documents[i:i+batch_size]
             results = client.recognize_entities(documents=batch)
+            import re
+            invoice_pattern = re.compile(r"INV-\d+")
             for idx, result in enumerate(results):
                 doc_num = i + idx + 1
+                # Track found invoice numbers for this document
+                found_invoice = False
                 for entity in result.entities:
-                    print(f"    Extracted entity: {entity.text} (Type: {entity.category}, Confidence: {entity.confidence_score * 100:.2f}%)")
-                    tags = [entity.category]
+                    # Check if entity matches invoice number pattern
+                    if invoice_pattern.fullmatch(entity.text):
+                        found_invoice = True
+                        entity_type = "InvoiceNumber"
+                    # If misclassified as quantity but matches invoice pattern, fix type
+                    elif entity.category.lower() in ["quantity", "number"] and invoice_pattern.fullmatch(entity.text):
+                        entity_type = "InvoiceNumber"
+                    else:
+                        entity_type = entity.category
+                    print(f"    Extracted entity: {entity.text} (Type: {entity_type}, Confidence: {entity.confidence_score * 100:.2f}%)")
+                    tags = [entity_type]
                     if entity.subcategory:
                         tags.append(entity.subcategory)
                     tags_str = ", ".join([f"{tag} ({entity.confidence_score * 100:.0f}%)" for tag in tags])
-                    metadata_name = "Integer" if entity.category.lower() == "number" else ""
-                    metadata_value = entity.text if entity.category.lower() == "number" else ""
                     csv_rows.append({
                         "Document Number": doc_num,
                         "Entity Text": entity.text,
-                        "Type": entity.category,
+                        "Type": entity_type,
                         "Offset": entity.offset,
                         "Length": entity.length,
                         "Confidence": f"{entity.confidence_score * 100:.2f}%",
                         "Tags": tags_str,
+                    })
+                # If no invoice number was found, try to extract from document text
+                if not found_invoice and invoice_pattern.search(documents[idx]):
+                    inv_num = invoice_pattern.search(documents[idx]).group(0)
+                    print(f"    Post-processed: Found invoice number {inv_num} in document text.")
+                    csv_rows.append({
+                        "Document Number": doc_num,
+                        "Entity Text": inv_num,
+                        "Type": "InvoiceNumber",
+                        "Offset": documents[idx].find(inv_num),
+                        "Length": len(inv_num),
+                        "Confidence": "N/A",
+                        "Tags": "InvoiceNumber",
                     })
         except Exception as err:
             print(f"  Encountered exception in batch {i//batch_size + 1}: {err}")

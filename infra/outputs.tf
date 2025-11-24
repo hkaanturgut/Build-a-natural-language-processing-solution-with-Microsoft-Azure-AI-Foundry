@@ -105,8 +105,8 @@ output "key_vault_id" {
 output "secret_names" {
   description = "Names of secrets stored in Key Vault"
   value = {
-  # language_service_id       = azurerm_key_vault_secret.language_service_id.name
-  # language_service_endpoint = azurerm_key_vault_secret.language_service_endpoint.name
+    language_service_id       = azurerm_key_vault_secret.language_service_id.name
+    language_service_endpoint = azurerm_key_vault_secret.language_service_endpoint.name
     ai_services_endpoint      = azurerm_key_vault_secret.ai_services_endpoint.name
     storage_connection_string = azurerm_key_vault_secret.storage_connection_string.name
   }
@@ -119,7 +119,7 @@ output "connection_info" {
     resource_group   = azurerm_resource_group.main.name
     key_vault_name   = azurerm_key_vault.main.name
     storage_account  = azurerm_storage_account.datasets.name
-  # language_service = azurerm_cognitive_account.language.name
+    language_service = azurerm_cognitive_account.language.name
     ai_services      = azurerm_ai_services.main.name
     environment      = var.environment
   }
