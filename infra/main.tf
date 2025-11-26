@@ -377,7 +377,7 @@ resource "azurerm_storage_blob" "clu_training_data" {
 }
 
 # Seamless automation: update .env file with Key Vault URI after apply
-resource "null_resource" "update_env_file" {
+resource "null_resource" "update_env_filee" {
   provisioner "local-exec" {
     command = "${path.module}/../update-env.sh"
   }
@@ -385,25 +385,7 @@ resource "null_resource" "update_env_file" {
   triggers = {
     key_vault_uri = azurerm_key_vault.main.vault_uri
   }
+
+  depends_on = [ azurerm_key_vault.main ]
 }
-
-# resource "azapi_resource" "language_service_connection" {
-#   type      = "Microsoft.CognitiveServices/accounts/connections@2025-06-01"
-#   name      = "language-service-connection"
-#   parent_id = azurerm_cognitive_account.language.id
-#   location  = azurerm_resource_group.main.location
-
-#   body = {
-#     properties = {
-#       category    = "CognitiveService"
-#       authType    = "ApiKey"
-#       target      = azurerm_cognitive_account.language.endpoint
-#       credentials = {
-#         key = azurerm_cognitive_account.language.primary_access_key
-#       }
-#       # Optionally add metadata, expiryTime, etc.
-#     }
-#   }
-#   depends_on = [azurerm_cognitive_account.language]
-# }
 

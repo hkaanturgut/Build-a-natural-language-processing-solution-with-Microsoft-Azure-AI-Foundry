@@ -32,3 +32,12 @@ resource "azurerm_role_assignment" "ai_foundry_project_kv_secrets_user" {
   principal_id         = azurerm_ai_foundry_project.main.identity[0].principal_id
   depends_on           = [azurerm_ai_foundry_project.main]
 }
+
+# Grant Language Service permissions to current user for project access
+resource "azurerm_role_assignment" "current_user_language_owner" {
+  scope                = azurerm_cognitive_account.language.id
+  role_definition_name = "Cognitive Services Language Owner"
+  principal_id         = data.azurerm_client_config.current.object_id
+  depends_on           = [azurerm_cognitive_account.language]
+}
+
