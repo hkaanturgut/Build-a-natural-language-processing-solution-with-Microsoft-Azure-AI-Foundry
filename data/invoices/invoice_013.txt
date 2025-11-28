@@ -1,0 +1,57 @@
+INVOICE BATCH 013
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-061
+Date: 2025-03-18
+Customer: QuantumComputing Labs
+Amount: $1,518.66
+Quantity: 66
+Item: Quantum Processor
+Unit Price: $23.01
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-062
+Date: 2025-03-19
+Customer: QuantumSimulator Inc
+Amount: $2,182.50
+Quantity: 91
+Item: Photonic Component
+Unit Price: $23.99
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-063
+Date: 2025-03-20
+Customer: Supercomputing Alliance
+Amount: $1,475.00
+Quantity: 59
+Item: Parallel Processor
+Unit Price: $25.00
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-064
+Date: 2025-03-21
+Customer: HighPerformance Computing
+Amount: $2,430.81
+Quantity: 81
+Item: Computational Node
+Unit Price: $30.01
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-065
+Date: 2025-03-22
+Customer: DataCenter Solutions
+Amount: $1,540.00
+Quantity: 77
+Item: Cooling System Unit
+Unit Price: $20.00
+Status: Paid

@@ -1,0 +1,57 @@
+INVOICE BATCH 008
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-036
+Date: 2025-02-21
+Customer: AutomationPro Inc
+Amount: $1,225.98
+Quantity: 98
+Item: Servo Motor 12V
+Unit Price: $12.51
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-037
+Date: 2025-02-22
+Customer: RoboticsMaster Corp
+Amount: $1,325.00
+Quantity: 53
+Item: Motor Controller Board
+Unit Price: $25.00
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-038
+Date: 2025-02-23
+Customer: MechanicalWave Labs
+Amount: $2,258.75
+Quantity: 113
+Item: Encoder Sensor
+Unit Price: $20.00
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-039
+Date: 2025-02-24
+Customer: ControlFlow Systems
+Amount: $1,417.50
+Quantity: 63
+Item: Relay Module 5V
+Unit Price: $22.50
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-040
+Date: 2025-02-25
+Customer: CircuitCraft Solutions
+Amount: $1,813.00
+Quantity: 74
+Item: Power Relay 12V
+Unit Price: $24.50
+Status: Paid

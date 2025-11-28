@@ -1,0 +1,57 @@
+INVOICE BATCH 005
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-021
+Date: 2025-02-06
+Customer: TechnoEdge Group
+Amount: $1,293.75
+Quantity: 65
+Item: Surge Protector 6-outlet
+Unit Price: $19.91
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-022
+Date: 2025-02-07
+Customer: CloudFlow Partners
+Amount: $1,500.00
+Quantity: 100
+Item: HDMI Cable 2.1
+Unit Price: $15.00
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-023
+Date: 2025-02-08
+Customer: DataCore Ventures
+Amount: $1,036.00
+Quantity: 56
+Item: DisplayPort Adapter
+Unit Price: $18.50
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-024
+Date: 2025-02-09
+Customer: NetBridge Solutions
+Amount: $1,570.75
+Quantity: 87
+Item: USB Adapter Hub
+Unit Price: $18.05
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-025
+Date: 2025-02-10
+Customer: DevSecOps Inc
+Amount: $1,350.00
+Quantity: 90
+Item: HDMI Splitter 4K
+Unit Price: $15.00
+Status: Paid

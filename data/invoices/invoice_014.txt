@@ -1,0 +1,57 @@
+INVOICE BATCH 014
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-066
+Date: 2025-03-23
+Customer: SoftwareDesign Group
+Amount: $2,425.97
+Quantity: 97
+Item: IDE License Pro
+Unit Price: $25.01
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-067
+Date: 2025-03-24
+Customer: DeveloperTools Corp
+Amount: $1,275.00
+Quantity: 50
+Item: Compiler Toolkit
+Unit Price: $25.50
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-068
+Date: 2025-03-25
+Customer: CodeOptimization Labs
+Amount: $2,550.00
+Quantity: 102
+Item: Debugger Software
+Unit Price: $25.00
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-069
+Date: 2025-03-26
+Customer: SoftwareEngineering Hub
+Amount: $1,664.00
+Quantity: 64
+Item: Version Control System
+Unit Price: $26.00
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-070
+Date: 2025-03-27
+Customer: DevelopmentEnvironment
+Amount: $2,200.00
+Quantity: 88
+Item: Build Automation Tool
+Unit Price: $25.00
+Status: Paid

@@ -1,0 +1,57 @@
+INVOICE BATCH 007
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-031
+Date: 2025-02-16
+Customer: MetaverseTech
+Amount: $1,044.58
+Quantity: 58
+Item: VR Headset Strap
+Unit Price: $18.01
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-032
+Date: 2025-02-17
+Customer: HoloSync Innovations
+Amount: $2,200.00
+Quantity: 88
+Item: 3D Mouse Controller
+Unit Price: $25.00
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-033
+Date: 2025-02-18
+Customer: SimulationCore Labs
+Amount: $1,575.00
+Quantity: 70
+Item: Motion Sensor Module
+Unit Price: $22.50
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-034
+Date: 2025-02-19
+Customer: ImmersiveAI Studios
+Amount: $1,312.50
+Quantity: 75
+Item: Haptic Feedback Glove
+Unit Price: $17.50
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-035
+Date: 2025-02-20
+Customer: XRealityDev Group
+Amount: $2,125.00
+Quantity: 85
+Item: Eye Tracking Module
+Unit Price: $25.00
+Status: Paid

@@ -1,0 +1,57 @@
+INVOICE BATCH 011
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-051
+Date: 2025-03-08
+Customer: AIVision Technologies
+Amount: $1,260.60
+Quantity: 60
+Item: GPU Accelerator Card
+Unit Price: $21.01
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-052
+Date: 2025-03-09
+Customer: MachineLearning Innovations
+Amount: $2,150.00
+Quantity: 86
+Item: TPU Processing Unit
+Unit Price: $25.00
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-053
+Date: 2025-03-10
+Customer: DeepLearning Studio
+Amount: $1,224.00
+Quantity: 68
+Item: Neural Accelerator
+Unit Price: $18.00
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-054
+Date: 2025-03-11
+Customer: ComputerVision Labs
+Amount: $1,463.27
+Quantity: 77
+Item: Image Processing Module
+Unit Price: $19.01
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-055
+Date: 2025-03-12
+Customer: NeuralNetwork Systems
+Amount: $2,100.00
+Quantity: 84
+Item: AI Inference Engine
+Unit Price: $25.00
+Status: Paid

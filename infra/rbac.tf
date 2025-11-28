@@ -41,3 +41,19 @@ resource "azurerm_role_assignment" "current_user_language_owner" {
   depends_on           = [azurerm_cognitive_account.language]
 }
 
+# # Grant Storage Blob Data Contributor to Language Service managed identity
+# resource "azurerm_role_assignment" "language_storage_blob_contributor" {
+#   scope                = azurerm_storage_account.datasets.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azurerm_cognitive_account.language.identity[0].principal_id
+#   depends_on           = [azurerm_cognitive_account.language, azurerm_storage_account.datasets]
+# }
+
+# # Grant Storage Blob Data Contributor to current user
+# resource "azurerm_role_assignment" "current_user_storage_blob_contributor" {
+#   scope                = azurerm_storage_account.datasets.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = data.azurerm_client_config.current.object_id
+#   depends_on           = [azurerm_storage_account.datasets]
+# }
+

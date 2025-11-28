@@ -1,0 +1,57 @@
+INVOICE BATCH 006
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-026
+Date: 2025-02-11
+Customer: IntelliTech Systems
+Amount: $1,162.77
+Quantity: 77
+Item: SD Card 256GB
+Unit Price: $15.11
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-027
+Date: 2025-02-12
+Customer: QuantumLeap Tech
+Amount: $880.00
+Quantity: 55
+Item: Micro SD Card 128GB
+Unit Price: $16.00
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-028
+Date: 2025-02-13
+Customer: CodeVault Solutions
+Amount: $2,750.00
+Quantity: 110
+Item: USB Thumb Drive 64GB
+Unit Price: $25.00
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-029
+Date: 2025-02-14
+Customer: ByteForce Labs
+Amount: $1,122.68
+Quantity: 68
+Item: External SSD 2TB
+Unit Price: $16.51
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-030
+Date: 2025-02-15
+Customer: PixelStream Media
+Amount: $1,360.00
+Quantity: 80
+Item: Portable HDD 1TB
+Unit Price: $17.00
+Status: Paid

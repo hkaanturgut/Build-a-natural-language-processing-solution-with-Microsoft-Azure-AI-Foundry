@@ -134,12 +134,19 @@ output "storage_connection_string" {
 
 # Uploaded data files
 output "uploaded_data_files" {
-  description = "Information about uploaded data files"
+  description = "Information about uploaded invoice data files"
   value = {
-    invoices_data = {
-      name = azurerm_storage_blob.invoices_data.name
-      url  = azurerm_storage_blob.invoices_data.url
+    for filename, blob in azurerm_storage_blob.invoices_data :
+    filename => {
+      name = blob.name
+      url  = blob.url
     }
+  }
+}
+
+output "pii_and_training_data" {
+  description = "Information about PII and CLU training data files"
+  value = {
     pii_samples_data = {
       name = azurerm_storage_blob.pii_samples_data.name
       url  = azurerm_storage_blob.pii_samples_data.url

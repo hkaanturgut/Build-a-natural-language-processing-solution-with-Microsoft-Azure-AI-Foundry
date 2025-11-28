@@ -1,0 +1,57 @@
+INVOICE BATCH 002
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-006
+Date: 2025-01-20
+Customer: ByteVault Systems
+Amount: $715.00
+Quantity: 50
+Item: USB 3.0 Hubs
+Unit Price: $14.30
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-007
+Date: 2025-01-21
+Customer: CodeStream Dev
+Amount: $1,885.29
+Quantity: 29
+Item: Monitor 27" 4K
+Unit Price: $64.99
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-008
+Date: 2025-01-22
+Customer: QuantumDrive Tech
+Amount: $7,130.94
+Quantity: 118
+Item: RAM Module 16GB DDR5
+Unit Price: $60.42
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-009
+Date: 2025-01-23
+Customer: VirtualCore Inc
+Amount: $2,987.50
+Quantity: 85
+Item: GPU Cooling Fan
+Unit Price: $35.15
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-010
+Date: 2025-01-24
+Customer: PixelForge Studios
+Amount: $2,640.66
+Quantity: 66
+Item: Webcam 1080p HD
+Unit Price: $40.01
+Status: Paid

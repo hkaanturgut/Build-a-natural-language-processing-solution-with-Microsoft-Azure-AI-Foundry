@@ -1,0 +1,57 @@
+INVOICE BATCH 015
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-071
+Date: 2025-03-28
+Customer: ITConsulting Firm
+Amount: $1,433.61
+Quantity: 61
+Item: Technical Support Pkg
+Unit Price: $23.51
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-072
+Date: 2025-03-29
+Customer: TechServices Provider
+Amount: $2,175.00
+Quantity: 87
+Item: System Admin Tools
+Unit Price: $25.00
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-073
+Date: 2025-03-30
+Customer: NetworkOperations Center
+Amount: $1,650.00
+Quantity: 66
+Item: Monitoring Dashboard
+Unit Price: $25.00
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-074
+Date: 2025-03-31
+Customer: ITInfrastructure Team
+Amount: $1,900.75
+Quantity: 76
+Item: Infrastructure Mgmt
+Unit Price: $25.01
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-075
+Date: 2025-04-01
+Customer: TechSupport Solutions
+Amount: $2,050.00
+Quantity: 82
+Item: Help Desk Software
+Unit Price: $25.00
+Status: Paid
