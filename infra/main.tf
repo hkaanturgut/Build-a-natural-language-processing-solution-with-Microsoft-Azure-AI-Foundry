@@ -182,6 +182,18 @@ resource "azurerm_key_vault_secret" "language_service_endpoint" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "language_service_key" {
+  name         = "language-service-key"
+  value        = azurerm_cognitive_account.language.primary_access_key
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    azurerm_cognitive_account.language
+  ]
+}
+
 # Deploy Azure AI Foundry
 resource "azurerm_ai_foundry" "main" {
   name                = "aif-${var.environment}-${local.location_short[var.location]}-001"
