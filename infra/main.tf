@@ -32,6 +32,14 @@ resource "azurerm_storage_account" "datasets" {
     container_delete_retention_policy {
       days = 7
     }
+
+    cors_rule {
+      allowed_headers    = ["*"]
+      allowed_methods    = ["DELETE", "GET", "HEAD", "MERGE", "POST", "OPTIONS", "PUT", "PATCH"]
+      allowed_origins    = ["*"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 0
+    }
   }
 
   tags = var.tags
@@ -220,6 +228,10 @@ resource "azurerm_ai_foundry" "main" {
     azurerm_key_vault.main,
     azurerm_role_assignment.current_user_kv_admin
   ]
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 
