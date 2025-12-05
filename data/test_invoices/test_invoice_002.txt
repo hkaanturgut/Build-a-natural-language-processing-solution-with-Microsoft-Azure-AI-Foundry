@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200002
+Date: 2025-12-01
+Customer: CloudTech Solutions
+
+Line Items:
+1. Enterprise WiFi 6 Router - Qty: 3 - Unit Price: $289.99 - Amount: $869.97
+2. Network Switch 48-Port - Qty: 2 - Unit Price: $599.00 - Amount: $1198.00
+3. Ethernet Cable Cat6a 100ft - Qty: 5 - Unit Price: $45.50 - Amount: $227.50
+4. Power Conditioner Unit - Qty: 1 - Unit Price: $899.99 - Amount: $899.99
+
+Subtotal: $3195.46
+Tax (8%): $255.64
+Total: $3451.10

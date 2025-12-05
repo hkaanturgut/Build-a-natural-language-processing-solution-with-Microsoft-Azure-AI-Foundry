@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200003
+Date: 2025-12-02
+Customer: DataVault Security
+
+Line Items:
+1. Hardware Security Module - Qty: 4 - Unit Price: $2499.00 - Amount: $9996.00
+2. Encryption Key Manager - Qty: 2 - Unit Price: $1799.99 - Amount: $3599.98
+3. Secure USB Token - Qty: 20 - Unit Price: $89.99 - Amount: $1799.80
+4. Biometric Authentication Scanner - Qty: 3 - Unit Price: $599.00 - Amount: $1797.00
+
+Subtotal: $17192.78
+Tax (8%): $1375.42
+Total: $18568.20

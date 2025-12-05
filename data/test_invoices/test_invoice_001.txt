@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200001
+Date: 2025-12-01
+Customer: Quantum Systems Inc
+
+Line Items:
+1. High-Performance Graphics Card - Qty: 8 - Unit Price: $449.99 - Amount: $3599.92
+2. DDR5 Memory Module - Qty: 16 - Unit Price: $129.50 - Amount: $2072.00
+3. NVMe Storage Drive - Qty: 4 - Unit Price: $199.99 - Amount: $799.96
+4. Liquid Cooling System - Qty: 2 - Unit Price: $349.00 - Amount: $698.00
+
+Subtotal: $7169.88
+Tax (8%): $573.59
+Total: $7743.47

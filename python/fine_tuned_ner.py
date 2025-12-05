@@ -26,28 +26,35 @@ API_VERSION = "2024-11-15-preview"
 PROJECT_NAME = "test-v3"
 DEPLOYMENT_NAME = "test"
 
-def fetch_invoices_from_storage(container_name="invoices"):
-    """Fetch all invoice files from Azure Storage blob container."""
+def fetch_invoices_from_local(test_invoices_dir="../data/test_invoices"):
+    """Fetch all test invoice files from local filesystem."""
     try:
-        blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
-        container_client = blob_service_client.get_container_client(container_name)
-        
         invoices = []
-        blob_list = container_client.list_blobs()
         
-        for blob in blob_list:
-            if blob.name.endswith('.txt'):
-                blob_client = container_client.get_blob_client(blob.name)
-                blob_data = blob_client.download_blob().readall().decode("utf-8")
+        # Get the directory path relative to the script location
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.join(script_dir, test_invoices_dir)
+        
+        # List all .txt files in the test_invoices directory
+        if not os.path.exists(full_path):
+            print(f"Error: Test invoices directory not found at {full_path}")
+            return []
+        
+        txt_files = sorted([f for f in os.listdir(full_path) if f.endswith('.txt')])
+        
+        for file_name in txt_files:
+            file_path = os.path.join(full_path, file_name)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
                 invoices.append({
-                    "file_name": blob.name,
-                    "content": blob_data
+                    "file_name": file_name,
+                    "content": content
                 })
         
-        print(f"Fetched {len(invoices)} invoice files from storage container '{container_name}'")
+        print(f"Loaded {len(invoices)} test invoice files from {full_path}")
         return invoices
     except Exception as err:
-        print(f"Error fetching invoices from storage: {err}")
+        print(f"Error loading test invoices from local filesystem: {err}")
         return []
 
 def extract_entities_with_fine_tuned_model(invoice_text, file_name):
@@ -318,19 +325,19 @@ def process_invoices_and_export(invoices):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("Fine-Tuned NER Model - Invoice Entity Extraction")
+    print("Fine-Tuned NER Model - Invoice Entity Extraction (Test Mode)")
     print("=" * 60)
     print(f"Endpoint: {LANGUAGE_SERVICE_ENDPOINT}")
     print(f"Project: {PROJECT_NAME}")
     print(f"Deployment: {DEPLOYMENT_NAME}")
     print("=" * 60)
     
-    # Fetch invoices from Azure Storage
-    invoices = fetch_invoices_from_storage(container_name="invoices")
+    # Load test invoices from local filesystem
+    invoices = fetch_invoices_from_local(test_invoices_dir="../data/test_invoices")
     
     if invoices:
         # Process invoices through fine-tuned model
         results = process_invoices_and_export(invoices)
         print(f"\nFinal Summary: Extracted {len(results)} total entities from {len(invoices)} invoice files.")
     else:
-        print("No invoices found in storage. Exiting.")
+        print("No test invoices found in local filesystem. Exiting.")

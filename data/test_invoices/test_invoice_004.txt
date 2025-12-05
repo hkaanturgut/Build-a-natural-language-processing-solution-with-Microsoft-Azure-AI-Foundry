@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200004
+Date: 2025-12-02
+Customer: InnovateLabs Corp
+
+Line Items:
+1. Machine Learning Accelerator - Qty: 6 - Unit Price: $3999.99 - Amount: $23999.94
+2. Tensor Processing Unit - Qty: 3 - Unit Price: $5499.00 - Amount: $16497.00
+3. High-Speed Interconnect Cable - Qty: 12 - Unit Price: $199.99 - Amount: $2399.88
+4. Thermal Management System - Qty: 2 - Unit Price: $1299.50 - Amount: $2599.00
+
+Subtotal: $45495.82
+Tax (8%): $3639.67
+Total: $49135.49

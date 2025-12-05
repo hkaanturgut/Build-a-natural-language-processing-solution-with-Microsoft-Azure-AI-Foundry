@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200010
+Date: 2025-12-05
+Customer: NeuroScience Ventures
+
+Line Items:
+1. Brain-Computer Interface Headset - Qty: 5 - Unit Price: $4999.00 - Amount: $24995.00
+2. Neural Signal Processor - Qty: 3 - Unit Price: $7999.99 - Amount: $23999.97
+3. EEG Electrode Array - Qty: 20 - Unit Price: $299.50 - Amount: $5990.00
+4. Cognitive Analysis Software License - Qty: 1 - Unit Price: $19999.00 - Amount: $19999.00
+
+Subtotal: $74983.97
+Tax (8%): $5998.72
+Total: $80982.69

@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200007
+Date: 2025-12-04
+Customer: QuantumLeap Research
+
+Line Items:
+1. Quantum Simulator Software - Qty: 1 - Unit Price: $49999.00 - Amount: $49999.00
+2. Cryogenic Dilution Refrigerator - Qty: 2 - Unit Price: $89999.99 - Amount: $179999.98
+3. RF Control System - Qty: 4 - Unit Price: $19999.50 - Amount: $79998.00
+4. Qubit Readout Module - Qty: 8 - Unit Price: $9999.00 - Amount: $79992.00
+
+Subtotal: $389988.98
+Tax (8%): $31199.12
+Total: $421188.10
