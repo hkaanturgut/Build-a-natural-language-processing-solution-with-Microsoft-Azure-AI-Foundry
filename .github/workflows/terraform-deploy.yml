@@ -204,15 +204,14 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Download Plan Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-plan-${{ github.run_id }}
-          path: ${{ steps.set-dir.outputs.working_dir }}
-
       - name: Terraform Apply
         run: |
-          terraform apply tfplan
+          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
+          echo "Applying Terraform configuration..."
+
+          terraform apply \
+            -var-file="$VARFILE" \
+            -auto-approve
         working-directory: ${{ steps.set-dir.outputs.working_dir }}
         env:
           ARM_USE_OIDC: true
