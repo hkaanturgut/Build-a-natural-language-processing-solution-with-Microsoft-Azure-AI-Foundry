@@ -6,14 +6,14 @@ on:
       - main
       - dev-v1
     paths:
-      - 'infra/terraform/**'
+      - 'infra/**'
       - '.github/workflows/terraform-deploy.yml'
   pull_request:
     branches:
       - main
       - dev-v1
     paths:
-      - 'infra/terraform/**'
+      - 'infra/**'
   workflow_dispatch:
     inputs:
       action:
@@ -28,7 +28,7 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'dev'
+        default: 'prod'
         type: choice
         options:
           - 'dev'
