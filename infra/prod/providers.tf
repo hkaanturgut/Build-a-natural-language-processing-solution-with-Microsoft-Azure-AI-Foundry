@@ -20,10 +20,6 @@ terraform {
 
   backend "azurerm" {
     use_oidc             = true
-    resource_group_name  = "rg-cc-terraform"
-    storage_account_name = "stccterraformstates01"
-    container_name       = "prod"
-    key                  = "terraform.tfstate"
   }
 }
 
