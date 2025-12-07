@@ -46,34 +46,13 @@ permissions:
 
 env:
   TERRAFORM_VERSION: '1.6.0'
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
 
 jobs:
-  determine-environment:
-    name: Determine Environment
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-    steps:
-      - name: Set environment based on trigger
-        id: set-env
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref_name }}" == "dev-v1" ]; then
-            echo "environment=dev" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref_name }}" == "qat-v1" ]; then
-            echo "environment=qat" >> $GITHUB_OUTPUT
-          else
-            echo "environment=prod" >> $GITHUB_OUTPUT
-          fi
-
   terraform-plan:
     name: Terraform Plan
-    needs: determine-environment
-    environment: ${{ needs.determine-environment.outputs.environment }}
+    environment: ${{ github.event.inputs.environment || 'prod' }}
     runs-on: ubuntu-latest
-    env:
-      ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
 
     steps:
       - name: Checkout Code
