@@ -83,7 +83,7 @@ jobs:
 
       - name: Terraform Format Check
         id: fmt
-        run: terraform fmt -check -recursive
+        run: pwd && terraform fmt -check -recursive
         working-directory: ${{ env.WORKING_DIRECTORY }}
         continue-on-error: true
 
