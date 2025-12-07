@@ -42,7 +42,7 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    environment: 'prod'
+    environment: 'terraform-dev'
     
     steps:
       - name: Checkout Code
@@ -167,7 +167,7 @@ jobs:
 
       - name: Upload Plan Artifact
         if: steps.plan.outcome == 'success'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ github.run_id }}
           path: ${{ env.WORKING_DIRECTORY }}/tfplan
@@ -208,7 +208,7 @@ jobs:
 #           allow-no-subscriptions: false
 
 #       - name: Download Plan Artifact
-#         uses: actions/download-artifact@v3
+#         uses: actions/download-artifact@v4
 #         with:
 #           name: terraform-plan-${{ github.run_id }}
 #           path: ${{ env.WORKING_DIRECTORY }}
@@ -248,7 +248,7 @@ jobs:
 #         continue-on-error: true
 
 #       - name: Upload Outputs Artifact
-#         uses: actions/upload-artifact@v3
+#         uses: actions/upload-artifact@v4
 #         with:
 #           name: terraform-outputs-${{ github.run_id }}
 #           path: ${{ env.WORKING_DIRECTORY }}/outputs.json
