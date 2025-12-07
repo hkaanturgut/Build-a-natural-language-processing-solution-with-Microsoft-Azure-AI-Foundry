@@ -25,10 +25,18 @@ on:
           - 'plan'
           - 'apply'
           - 'destroy'
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - 'dev'
+          - 'qat'
+          - 'prod'
 
 env:
   TERRAFORM_VERSION: '1.6.0'
-  WORKING_DIRECTORY: './infra/terraform'
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -43,6 +51,8 @@ jobs:
     name: Terraform Plan
     runs-on: ubuntu-latest
     environment: 'prod'
+    env:
+      WORKING_DIRECTORY: ${{ github.event_name == 'workflow_dispatch' && format('./infra/{0}', github.event.inputs.environment) || format('./infra/{0}', github.ref_name == 'main' && 'prod' || github.ref_name == 'qat' && 'qat' || 'dev') }}
     
     steps:
       - name: Checkout Code
@@ -101,8 +111,9 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
+          ENV_NAME=$(basename $WORKING_DIRECTORY)
           terraform plan \
-            -var-file="dev_terraform.tfvars" \
+            -var-file="${ENV_NAME}_terraform.tfvars" \
             -out=tfplan \
             -detailed-exitcode
         working-directory: ${{ env.WORKING_DIRECTORY }}
