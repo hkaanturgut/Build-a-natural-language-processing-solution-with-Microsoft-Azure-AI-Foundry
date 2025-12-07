@@ -115,7 +115,6 @@ jobs:
           terraform plan \
             -var-file="$VARFILE" \
             -out=tfplan \
-            -detailed-exitcode
         working-directory: ${{ steps.set-dir.outputs.working_dir }}
         env:
           ARM_USE_OIDC: true

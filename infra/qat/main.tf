@@ -17,6 +17,7 @@ module "nlp" {
 
   # Storage Account Features
   enable_storage_https_only          = var.enable_storage_https_only
+  enable_storage_public_access       = var.enable_storage_public_access
   disable_public_network_access      = var.disable_public_network_access
   allow_storage_nested_public_access = var.allow_storage_nested_public_access
   enable_blob_versioning             = var.enable_blob_versioning

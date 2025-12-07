@@ -86,6 +86,12 @@ variable "enable_storage_https_only" {
   default     = true
 }
 
+variable "enable_storage_public_access" {
+  description = "Enable public network access to storage account"
+  type        = bool
+  default     = true
+}
+
 variable "disable_public_network_access" {
   description = "Disable public network access to storage account"
   type        = bool
