@@ -50,57 +50,41 @@ env:
 jobs:
   terraform-plan:
     name: Terraform Plan
+
+    # ----------------------------------------------------------------
+    # SELECT ENVIRONMENT BASED ON EVENT (BRANCH OR MANUAL INPUT)
+    # ----------------------------------------------------------------
+    strategy:
+      matrix:
+        environment: |
+          ${{ fromJson(
+            github.event_name == 'workflow_dispatch' &&
+            '["' + github.event.inputs.environment + '"]' ||
+            (
+              github.ref_name == 'dev-v1' && '["dev"]' ||
+              github.ref_name == 'qat-v1' && '["qat"]' ||
+              github.ref_name == 'main'   && '["prod"]' ||
+              '["prod"]'
+            )
+          ) }}
+    environment: ${{ matrix.environment }}
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # ------------------------------------------
-      # RESOLVE ENVIRONMENT (dev / qat / prod)
-      # ------------------------------------------
-      - name: Determine environment folder
-        id: resolve-env
+      # ----------------------------------------------------------------
+      # RESOLVE WORKING DIRECTORY BASED ON THE MATRIX ENVIRONMENT
+      # ----------------------------------------------------------------
+      - name: Set working directory
+        id: set-dir
         run: |
-          echo "Event: ${{ github.event_name }}"
-          echo "Branch: ${{ github.ref_name }}"
-
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-          else
-            case "${{ github.ref_name }}" in
-              "dev-v1")
-                ENV="dev"
-                ;;
-              "qat-v1")
-                ENV="qat"
-                ;;
-              "main")
-                ENV="prod"
-                ;;
-              *)
-                echo "Unknown branch, defaulting to prod."
-                ENV="prod"
-                ;;
-            esac
-          fi
-
-          echo "Detected Environment = $ENV"
-
-          # Export outputs
-          echo "env_name=$ENV" >> $GITHUB_OUTPUT
-          echo "working_directory=./infra/$ENV" >> $GITHUB_OUTPUT
-
-      # ------------------------------------------
-      # ASSIGN THE JOB ENVIRONMENT HERE
-      # ------------------------------------------
-    environment: ${{ steps.resolve-env.outputs.env_name }}
-
-    steps:
-      - name: Print Environment Info
-        run: |
-          echo "🟩 Selected Environment: ${{ steps.resolve-env.outputs.env_name }}"
-          echo "📁 Working Directory: ${{ steps.resolve-env.outputs.working_directory }}"
+          echo "Matrix environment: ${{ matrix.environment }}"
+          WORKDIR="./infra/${{ matrix.environment }}"
+          echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
+          echo "Using working directory: $WORKDIR"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -108,24 +92,19 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
-      - name: Azure Login with OIDC
+      - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          allow-no-subscriptions: false
 
-      # Terraform formatting
       - name: Terraform Format Check
-        id: fmt
         run: terraform fmt -check -recursive
-        working-directory: ${{ steps.resolve-env.outputs.workding_directory }}
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
         continue-on-error: true
 
-      # Init
       - name: Terraform Init
-        id: init
         run: |
           terraform init \
             -backend-config="key=terraform.tfstate" \
@@ -133,53 +112,49 @@ jobs:
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
             -upgrade
-        working-directory: ${{ steps.resolve-env.outputs.working_directory }}
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
         env:
+          ARM_USE_OIDC: true
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_USE_OIDC: true
 
-      # Validate
       - name: Terraform Validate
-        id: validate
         run: terraform validate
-        working-directory: ${{ steps.resolve-env.outputs.working_directory }}
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
 
-      # Plan
       - name: Terraform Plan
         id: plan
         run: |
-          ENV_FILE="${{ steps.resolve-env.outputs.env_name }}_terraform.tfvars"
-          echo "Using var-file: $ENV_FILE"
+          VARFILE="${{ matrix.environment }}_terraform.tfvars"
+          echo "Using var-file: $VARFILE"
 
           terraform plan \
-            -var-file="$ENV_FILE" \
+            -var-file="$VARFILE" \
             -out=tfplan \
             -detailed-exitcode
-        working-directory: ${{ steps.resolve-env.outputs.working_directory }}
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
         env:
+          ARM_USE_OIDC: true
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_USE_OIDC: true
         continue-on-error: true
 
       - name: Generate Plan Summary
         if: steps.plan.outcome == 'success'
-        id: plan-summary
         run: |
           terraform show tfplan > tfplan.txt
           echo "## Terraform Plan Summary" >> $GITHUB_STEP_SUMMARY
           terraform show tfplan >> $GITHUB_STEP_SUMMARY
-        working-directory: ${{ steps.resolve-env.outputs.working_directory }}
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
 
       - name: Upload Plan Artifact
         if: steps.plan.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ github.run_id }}
-          path: ${{ steps.resolve-env.outputs.working_directory }}/tfplan
+          path: ${{ steps.set-dir.outputs.working_dir }}/tfplan
           retention-days: 5
 
       - name: Plan Status
