@@ -1,5 +1,5 @@
 module "nlp" {
-    source = "../infra"
+    source = "../terraform"
     
     environment = var.environment
     location    = var.location

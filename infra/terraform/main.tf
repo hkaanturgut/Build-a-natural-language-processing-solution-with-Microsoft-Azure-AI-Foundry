@@ -1,13 +1,13 @@
 # Create Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-ai-${local.location_short[var.location]}-${var.environment}-001"
+  name     = "rg-nlp-${local.location_short[var.location]}-${var.environment}-01"
   location = var.location
   tags     = var.tags
 }
 
 # Create Storage Account for AI Foundry
 resource "azurerm_storage_account" "datasets" {
-  name                     = "stnlp${var.environment}eus001"
+  name                     = "stnlp${var.environment}${local.location_short[var.location]}01"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = var.storage_account_tier
@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "datasets" {
   https_traffic_only_enabled      = var.enable_storage_https_only
   min_tls_version                 = var.min_tls_version
   allow_nested_items_to_be_public = var.allow_storage_nested_public_access
-  public_network_access_enabled   = var.enable_storage_public_access
+  public_network_access_enabled   = !var.disable_public_network_access
 
   # Enable blob versioning and soft delete
   blob_properties {
@@ -85,16 +85,16 @@ resource "azurerm_storage_container" "reports" {
 
 # Deploy Azure AI Services resource
 resource "azurerm_ai_services" "main" {
-  name                = "ais-${var.environment}-${local.location_short[var.location]}-001"
+  name                = "ais-${var.environment}-${local.location_short[var.location]}-01"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   sku_name            = var.ai_services_sku
 
   # Set custom subdomain for API access
-  custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-001"
+  custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-01"
 
   # Network and authentication settings
-  public_network_access              = var.ai_services_public_network_access
+  public_network_access              = var.disable_public_network_access ? "Disabled" : "Enabled"
   outbound_network_access_restricted = var.ai_services_outbound_network_access_restricted
   local_authentication_enabled       = var.ai_services_local_auth_enabled
 
@@ -105,7 +105,7 @@ resource "azurerm_ai_services" "main" {
 
 # Deploy Azure Key Vault with RBAC
 resource "azurerm_key_vault" "main" {
-  name                = "kv-${var.environment}-${local.location_short[var.location]}-ai-001"
+  name                = "kv-${var.environment}-${local.location_short[var.location]}-ai-01"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -113,7 +113,7 @@ resource "azurerm_key_vault" "main" {
 
   # Enable RBAC authorization instead of access policies
   rbac_authorization_enabled    = var.enable_key_vault_rbac
-  public_network_access_enabled = var.enable_key_vault_public_access
+  public_network_access_enabled = !var.disable_public_network_access
   purge_protection_enabled      = var.key_vault_purge_protection_enabled
   soft_delete_retention_days    = var.key_vault_soft_delete_retention_days
 
@@ -127,17 +127,17 @@ resource "azurerm_key_vault" "main" {
 
 
 resource "azurerm_cognitive_account" "language" {
-  name                = "lang-${var.environment}-${local.location_short[var.location]}-001"
+  name                = "lang-${var.environment}-${local.location_short[var.location]}-01"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   kind                = var.language_service_kind
   sku_name            = var.language_service_sku
 
   # Enable Custom features (NER, CLU)
-  custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-001"
+  custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-01"
 
   # Network settings
-  public_network_access_enabled = var.enable_language_service_public_access
+  public_network_access_enabled = !var.disable_public_network_access
 
   storage {
     storage_account_id = azurerm_storage_account.datasets.id
@@ -193,7 +193,7 @@ resource "azurerm_key_vault_secret" "language_service_key" {
 
 # Deploy Azure AI Foundry
 resource "azurerm_ai_foundry" "main" {
-  name                = "aif-${var.environment}-${local.location_short[var.location]}-001"
+  name                = "aif-${var.environment}-${local.location_short[var.location]}-01"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -202,7 +202,7 @@ resource "azurerm_ai_foundry" "main" {
   key_vault_id       = azurerm_key_vault.main.id
 
   # Network settings
-  public_network_access = var.ai_foundry_public_network_access
+  public_network_access = var.disable_public_network_access ? "Disabled" : "Enabled"
 
   # Managed identity for secure access
   identity {
@@ -227,7 +227,7 @@ resource "azurerm_ai_foundry" "main" {
 
 # Deploy Azure AI Foundry Project
 resource "azurerm_ai_foundry_project" "main" {
-  name               = "aifp-${var.environment}-${local.location_short[var.location]}-001"
+  name               = "aifp-${var.environment}-${local.location_short[var.location]}-01"
   location           = azurerm_resource_group.main.location
   ai_services_hub_id = azurerm_ai_foundry.main.id
 

@@ -11,6 +11,7 @@ A comprehensive **production-ready** Named Entity Recognition (NER) solution tha
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
 - [Step-by-Step Setup Guide](#step-by-step-setup-guide)
+- [Network Security](#network-security)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
@@ -410,6 +411,98 @@ python3 python/custom_ner.py
 # Option C: Compare both models
 python3 python/model_comparison.py
 ```
+
+---
+
+## Network Security
+
+### Private Endpoint Architecture
+
+This project includes a **complete private endpoint infrastructure** that isolates all Azure resources from the public internet. All traffic flows through private connections within a Virtual Network (VNet).
+
+#### Key Components
+
+- **Virtual Network (VNet)**: `10.0.0.0/16` with 3 subnets
+- **Private Endpoints**: Secure connections for Storage, Key Vault, Language Service, and AI Services
+- **Network Security Groups**: Fine-grained traffic control with least-privilege rules
+- **Private DNS Zones**: Automatic name resolution without public DNS exposure
+
+#### Deployment
+
+**Optional**: Deploy networking infrastructure (if not already included):
+
+```bash
+# 1. Review networking configuration
+cd infra/terraform
+terraform plan -var-file=dev_terraform.tfvars | grep -E "private_endpoint|subnet|dns_zone"
+
+# 2. Deploy private endpoints and VNet
+./../../deploy-network.sh dev
+
+# Expected output:
+# ✓ Virtual Network created
+# ✓ 3 Subnets created (Private Endpoints, App Gateway, Bastion)
+# ✓ 4 Private Endpoints created
+# ✓ 3 Private DNS Zones created
+# ✓ Network Security Groups configured
+```
+
+#### Verification
+
+```bash
+# Verify all networking components
+./../../verify-network.sh dev
+
+# Expected output:
+# ✓ VNet found
+# ✓ 3 Subnets created
+# ✓ 4 Private Endpoints (all with "Succeeded" status)
+# ✓ 3 Private DNS Zones linked
+# ✓ All services with public access disabled
+```
+
+#### Architecture Diagram
+
+```
+┌──────────────────────────────────────────┐
+│     Virtual Network (10.0.0.0/16)       │
+├──────────────────────────────────────────┤
+│                                          │
+│  Private Endpoints Subnet (10.0.1.0/24) │
+│  ┌────────────┐ ┌────────────┐         │
+│  │ Storage PE │ │ KeyVault PE│        │
+│  └────────────┘ └────────────┘         │
+│  ┌────────────┐ ┌────────────┐         │
+│  │ Language PE│ │ AI Svc PE  │         │
+│  └────────────┘ └────────────┘         │
+│                                          │
+│  Private DNS Zones:                      │
+│  • privatelink.blob.core.windows.net     │
+│  • privatelink.vaultcore.azure.net       │
+│  • privatelink.cognitiveservices.azure.com│
+│                                          │
+└──────────────────────────────────────────┘
+```
+
+#### Security Features
+
+✅ **Zero Public Access**: All services configured with public access disabled  
+✅ **Encrypted Communication**: Private endpoints use TLS 1.2+  
+✅ **Network Segmentation**: Subnets isolate different resource types  
+✅ **Access Control**: NSG rules enforce least-privilege traffic  
+✅ **Private DNS**: Automatic endpoint discovery without public resolution  
+
+#### Documentation
+
+For detailed networking information, configuration options, and troubleshooting:
+
+📖 See [`NETWORKING.md`](./NETWORKING.md) for:
+- Complete architecture diagrams
+- NSG rules and traffic flow
+- DNS resolution process
+- Health check procedures
+- Troubleshooting guides
+- Security best practices
 
 ---
 
