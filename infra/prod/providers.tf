@@ -30,7 +30,5 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-
-
 # Get current client configuration
 data "azurerm_client_config" "current" {}
