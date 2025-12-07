@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 'prod'
     env:
-      WORKING_DIRECTORY: infra/prod
+      WORKING_DIRECTORY: infra/${{ github.event.inputs.environment || 'prod' }}
     
     steps:
       - name: Checkout Code
