@@ -17,4 +17,8 @@ terraform {
       version = "~>2.4"
     }
   }
+
 }
+
+# Get current client configuration
+data "azurerm_client_config" "current" {}
