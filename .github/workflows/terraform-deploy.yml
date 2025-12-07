@@ -48,41 +48,45 @@ env:
   TERRAFORM_VERSION: '1.6.0'
 
 jobs:
+  determine-environment:
+    name: Determine Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment based on trigger
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" == "dev-v1" ]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" == "qat-v1" ]; then
+            echo "environment=qat" >> $GITHUB_OUTPUT
+          else
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          fi
+
   terraform-plan:
     name: Terraform Plan
-
-    # ----------------------------------------------------------------
-    # SELECT ENVIRONMENT BASED ON EVENT (BRANCH OR MANUAL INPUT)
-    # ----------------------------------------------------------------
-    strategy:
-      matrix:
-        environment: |
-          ${{ fromJson(
-            github.event_name == 'workflow_dispatch' &&
-            '["' + github.event.inputs.environment + '"]' ||
-            (
-              github.ref_name == 'dev-v1' && '["dev"]' ||
-              github.ref_name == 'qat-v1' && '["qat"]' ||
-              github.ref_name == 'main'   && '["prod"]' ||
-              '["prod"]'
-            )
-          ) }}
-    environment: ${{ matrix.environment }}
-
+    needs: determine-environment
+    environment: ${{ needs.determine-environment.outputs.environment }}
     runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       # ----------------------------------------------------------------
-      # RESOLVE WORKING DIRECTORY BASED ON THE MATRIX ENVIRONMENT
+      # RESOLVE WORKING DIRECTORY BASED ON ENVIRONMENT
       # ----------------------------------------------------------------
       - name: Set working directory
         id: set-dir
         run: |
-          echo "Matrix environment: ${{ matrix.environment }}"
-          WORKDIR="./infra/${{ matrix.environment }}"
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          WORKDIR="./infra/${{ env.ENVIRONMENT }}"
           echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
           echo "Using working directory: $WORKDIR"
 
@@ -126,7 +130,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          VARFILE="${{ matrix.environment }}_terraform.tfvars"
+          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
           echo "Using var-file: $VARFILE"
 
           terraform plan \
