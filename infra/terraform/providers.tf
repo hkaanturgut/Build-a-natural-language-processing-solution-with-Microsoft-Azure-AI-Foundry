@@ -17,13 +17,6 @@ terraform {
       version = "~>2.4"
     }
   }
-
-  backend "azurerm" {
-    use_oidc             = true
-  }
-}
-
-
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
