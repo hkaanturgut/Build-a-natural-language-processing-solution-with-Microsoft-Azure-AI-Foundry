@@ -90,3 +90,15 @@ tags = {
   Repository  = "Build-a-natural-language-processing-solution-with-Azure-AI-Foundry"
   CreatedBy   = "Terraform"
 }
+
+# Network Rules for Key Vault
+# Allows public access to Key Vault but only from specific IPs and subnets
+# Trusted Microsoft services can always bypass these rules
+key_vault_allowed_ip_rules = []  # Example: ["203.0.113.0/24", "198.51.100.50"]
+key_vault_allowed_subnet_ids = []  # Example: ["/subscriptions/xxx/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet1"]
+
+# Network Rules for Storage Account
+# Allows public access to Storage Account but only from specific IPs and subnets
+# Azure Services (including GitHub Actions) can always bypass these rules via "AzureServices" bypass
+storage_account_allowed_ip_rules = []  # Example: ["203.0.113.0/24", "198.51.100.50"]
+storage_account_allowed_subnet_ids = []  # Example: ["/subscriptions/xxx/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet1"]

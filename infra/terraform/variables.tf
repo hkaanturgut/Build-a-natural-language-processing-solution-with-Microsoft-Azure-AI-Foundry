@@ -437,3 +437,27 @@ variable "disable_public_network_access" {
   type        = bool
   default     = true
 }
+
+variable "key_vault_allowed_ip_rules" {
+  description = "List of IP addresses to allow access to Key Vault"
+  type        = list(string)
+  default     = []
+}
+
+variable "key_vault_allowed_subnet_ids" {
+  description = "List of subnet IDs to allow access to Key Vault"
+  type        = list(string)
+  default     = []
+}
+
+variable "storage_account_allowed_ip_rules" {
+  description = "List of IP addresses to allow access to Storage Account"
+  type        = list(string)
+  default     = []
+}
+
+variable "storage_account_allowed_subnet_ids" {
+  description = "List of subnet IDs to allow access to Storage Account"
+  type        = list(string)
+  default     = []
+}

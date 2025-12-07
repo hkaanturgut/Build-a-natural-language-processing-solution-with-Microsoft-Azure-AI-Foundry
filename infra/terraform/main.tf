@@ -46,7 +46,6 @@ resource "azurerm_storage_account" "datasets" {
 
   depends_on = [azurerm_resource_group.main]
 }
-
 # Location code variable
 
 locals {
@@ -120,6 +119,17 @@ resource "azurerm_key_vault" "main" {
   tags = var.tags
 
   depends_on = [azurerm_resource_group.main]
+}
+
+# Configure Key Vault network rules
+resource "azurerm_key_vault_network_rules" "main" {
+  key_vault_id                       = azurerm_key_vault.main.id
+  default_action                     = "Deny"
+  bypass                             = "AzureServices"
+  ip_rules                           = var.key_vault_allowed_ip_rules
+  virtual_network_subnet_ids         = var.key_vault_allowed_subnet_ids
+  
+  depends_on = [azurerm_key_vault.main]
 }
 
 # Grant Key Vault Administrator role to current user
