@@ -43,6 +43,7 @@ permissions:
   contents: read
   id-token: write
   pull-requests: write
+  issues: write
 
 env:
   TERRAFORM_VERSION: '1.6.0'
@@ -156,7 +157,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: user1,user2,org-team1
+          approvers: hkaanturgut
           minimum-approvals: 1
           issue-title: "Deploying Terraform to ${{ env.ENVIRONMENT }}"
           issue-body: "Please approve or deny the Terraform deployment to ${{ env.ENVIRONMENT }}."
