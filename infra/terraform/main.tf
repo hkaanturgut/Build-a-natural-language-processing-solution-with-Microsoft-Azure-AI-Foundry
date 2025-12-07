@@ -116,20 +116,17 @@ resource "azurerm_key_vault" "main" {
   purge_protection_enabled      = var.key_vault_purge_protection_enabled
   soft_delete_retention_days    = var.key_vault_soft_delete_retention_days
 
+  # Configure network access rules
+  network_acls {
+    bypass                     = "AzureServices"
+    default_action             = "Deny"
+    ip_rules                   = var.key_vault_allowed_ip_rules
+    virtual_network_subnet_ids = var.key_vault_allowed_subnet_ids
+  }
+
   tags = var.tags
 
   depends_on = [azurerm_resource_group.main]
-}
-
-# Configure Key Vault network rules
-resource "azurerm_key_vault_network_rules" "main" {
-  key_vault_id                       = azurerm_key_vault.main.id
-  default_action                     = "Deny"
-  bypass                             = "AzureServices"
-  ip_rules                           = var.key_vault_allowed_ip_rules
-  virtual_network_subnet_ids         = var.key_vault_allowed_subnet_ids
-  
-  depends_on = [azurerm_key_vault.main]
 }
 
 # Grant Key Vault Administrator role to current user
