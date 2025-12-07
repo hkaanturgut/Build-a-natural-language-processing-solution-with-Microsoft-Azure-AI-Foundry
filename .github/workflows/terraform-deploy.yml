@@ -81,9 +81,14 @@ jobs:
           echo "::add-mask::$TOKEN"
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
+          echo "pwd"
+          pwd
+          echo "ls -la"
+          ls -la
+
       - name: Terraform Format Check
         id: fmt
-        run: pwd && terraform fmt -check -recursive
+        run: terraform fmt -check -recursive
         working-directory: ${{ env.WORKING_DIRECTORY }}
         continue-on-error: true
 
