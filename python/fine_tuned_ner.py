@@ -1,30 +1,23 @@
-from dotenv import load_dotenv
 import os
 import json
 import csv
 import requests
 from datetime import datetime
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobServiceClient
+from config import Config
 
-# Load environment variables from .env file
-load_dotenv()
-BOOTSTRAP_KEY_VAULT_URI = os.getenv("KEY_VAULT_URI")
-credential = DefaultAzureCredential()
-bootstrap_client = SecretClient(vault_url=BOOTSTRAP_KEY_VAULT_URI, credential=credential)
-key_vault_uri = bootstrap_client.get_secret("key-vault-uri").value
+# Validate configuration on startup
+Config.validate(strict=True)
 
-# Now use the discovered Key Vault URI for all other secrets
-client_kv = SecretClient(vault_url=key_vault_uri, credential=credential)
-language_service_key = client_kv.get_secret("language-service-key").value
-storage_connection_string = client_kv.get_secret("storage-connection-string").value
+# Load configuration from centralized config module
+LANGUAGE_SERVICE_ENDPOINT = Config.LANGUAGE_SERVICE_ENDPOINT
+API_VERSION = Config.LANGUAGE_SERVICE_API_VERSION
+PROJECT_NAME = Config.AI_FOUNDRY_PROJECT_NAME
+DEPLOYMENT_NAME = Config.AI_FOUNDRY_DEPLOYMENT_NAME
 
-# Fine-tuned model configuration
-LANGUAGE_SERVICE_ENDPOINT = "https://lang-dev-eus2-001.cognitiveservices.azure.com/"
-API_VERSION = "2024-11-15-preview"
-PROJECT_NAME = "test-v3"
-DEPLOYMENT_NAME = "test"
+# Get credentials from Key Vault
+language_service_key = Config.get_language_service_key()
+storage_connection_string = Config.get_storage_connection_string()
 
 def fetch_invoices_from_local(test_invoices_dir="../data/test_invoices"):
     """Fetch all test invoice files from local filesystem."""
