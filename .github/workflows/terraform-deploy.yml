@@ -42,7 +42,7 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    environment: 'terraform-dev'
+    environment: 'prod'
     
     steps:
       - name: Checkout Code
