@@ -5,6 +5,23 @@ resource "azurerm_role_assignment" "current_user_kv_admin" {
   depends_on           = [azurerm_key_vault.main]
 }
 
+# Grant Storage Blob Data Contributor to current user on storage account
+# The user must have "Storage Blob Data Contributor" role in the Azure Blob storage account to run Custom Text Classification
+resource "azurerm_role_assignment" "current_user_storage_blob_contributor" {
+  scope                = azurerm_storage_account.datasets.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+  depends_on           = [azurerm_storage_account.datasets]
+}
+
+# Grant Storage Blob Data Contributor role to language service managed identity
+resource "azurerm_role_assignment" "language_storage_blob_contributor" {
+  scope              = azurerm_storage_account.datasets.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id       = azurerm_cognitive_account.language.identity[0].principal_id
+
+  depends_on = [azurerm_cognitive_account.language]
+}
 resource "azurerm_role_assignment" "language_storage_blob_owner" {
   scope                = azurerm_storage_account.datasets.id
   role_definition_name = "Storage Blob Data Owner"

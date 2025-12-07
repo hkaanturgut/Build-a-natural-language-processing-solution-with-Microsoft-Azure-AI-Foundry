@@ -7,38 +7,38 @@ resource "azurerm_resource_group" "main" {
 
 # Create Storage Account for AI Foundry
 resource "azurerm_storage_account" "datasets" {
-  name                     = var.storage_account_name
+  name                     = "stnlp${var.environment}eus001"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
+  account_tier             = var.storage_account_tier
+  account_replication_type = var.storage_account_replication_type
+  account_kind             = var.storage_account_kind
 
   # Security settings
-  https_traffic_only_enabled      = true
-  min_tls_version                 = "TLS1_2"
-  allow_nested_items_to_be_public = false
-  public_network_access_enabled   = true
+  https_traffic_only_enabled      = var.enable_storage_https_only
+  min_tls_version                 = var.min_tls_version
+  allow_nested_items_to_be_public = var.allow_storage_nested_public_access
+  public_network_access_enabled   = var.enable_storage_public_access
 
   # Enable blob versioning and soft delete
   blob_properties {
-    versioning_enabled  = true
-    change_feed_enabled = true
+    versioning_enabled  = var.enable_blob_versioning
+    change_feed_enabled = var.enable_blob_change_feed
 
     delete_retention_policy {
-      days = 7
+      days = var.blob_soft_delete_retention_days
     }
 
     container_delete_retention_policy {
-      days = 7
+      days = var.container_soft_delete_retention_days
     }
 
     cors_rule {
-      allowed_headers    = ["*"]
-      allowed_methods    = ["DELETE", "GET", "HEAD", "MERGE", "POST", "OPTIONS", "PUT", "PATCH"]
-      allowed_origins    = ["*"]
-      exposed_headers    = ["*"]
-      max_age_in_seconds = 0
+      allowed_headers    = var.storage_cors_allowed_headers
+      allowed_methods    = var.storage_cors_allowed_methods
+      allowed_origins    = var.storage_cors_allowed_origins
+      exposed_headers    = var.storage_cors_exposed_headers
+      max_age_in_seconds = var.storage_cors_max_age_seconds
     }
   }
 
@@ -68,26 +68,17 @@ variable "location_code" {
 }
 # Create containers for different data types
 resource "azurerm_storage_container" "invoices" {
-  name                  = "invoices"
+  name                  = var.storage_container_invoices_name
   storage_account_id    = azurerm_storage_account.datasets.id
-  container_access_type = "private"
+  container_access_type = var.storage_container_access_type
 
   depends_on = [azurerm_storage_account.datasets]
 }
-
-resource "azurerm_storage_container" "training" {
-  name                  = "training"
-  storage_account_id    = azurerm_storage_account.datasets.id
-  container_access_type = "private"
-
-  depends_on = [azurerm_storage_account.datasets]
-}
-
 
 resource "azurerm_storage_container" "reports" {
-  name                  = "reports"
+  name                  = var.storage_container_reports_name
   storage_account_id    = azurerm_storage_account.datasets.id
-  container_access_type = "private"
+  container_access_type = var.storage_container_access_type
 
   depends_on = [azurerm_storage_account.datasets]
 }
@@ -97,15 +88,15 @@ resource "azurerm_ai_services" "main" {
   name                = "ais-${var.environment}-${local.location_short[var.location]}-001"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  sku_name            = "S0"
+  sku_name            = var.ai_services_sku
 
   # Set custom subdomain for API access
   custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-001"
 
   # Network and authentication settings
-  public_network_access              = "Enabled"
-  outbound_network_access_restricted = false
-  local_authentication_enabled       = true
+  public_network_access              = var.ai_services_public_network_access
+  outbound_network_access_restricted = var.ai_services_outbound_network_access_restricted
+  local_authentication_enabled       = var.ai_services_local_auth_enabled
 
   tags = var.tags
 
@@ -118,13 +109,13 @@ resource "azurerm_key_vault" "main" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  sku_name            = "standard"
+  sku_name            = var.key_vault_sku_name
 
   # Enable RBAC authorization instead of access policies
-  rbac_authorization_enabled     = true
-  public_network_access_enabled = true
-  purge_protection_enabled      = true
-  soft_delete_retention_days    = 90
+  rbac_authorization_enabled    = var.enable_key_vault_rbac
+  public_network_access_enabled = var.enable_key_vault_public_access
+  purge_protection_enabled      = var.key_vault_purge_protection_enabled
+  soft_delete_retention_days    = var.key_vault_soft_delete_retention_days
 
   tags = var.tags
 
@@ -139,14 +130,14 @@ resource "azurerm_cognitive_account" "language" {
   name                = "lang-${var.environment}-${local.location_short[var.location]}-001"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  kind                = "TextAnalytics"
-  sku_name            = "S"
+  kind                = var.language_service_kind
+  sku_name            = var.language_service_sku
 
   # Enable Custom features (NER, CLU)
   custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-001"
 
   # Network settings
-  public_network_access_enabled = true
+  public_network_access_enabled = var.enable_language_service_public_access
 
   storage {
     storage_account_id = azurerm_storage_account.datasets.id
@@ -164,8 +155,6 @@ resource "azurerm_cognitive_account" "language" {
     azurerm_role_assignment.current_user_kv_admin
   ]
 }
-
-
 
 resource "azurerm_key_vault_secret" "language_service_id" {
   name         = "language-service-id"
@@ -213,7 +202,7 @@ resource "azurerm_ai_foundry" "main" {
   key_vault_id       = azurerm_key_vault.main.id
 
   # Network settings
-  public_network_access = "Enabled"
+  public_network_access = var.ai_foundry_public_network_access
 
   # Managed identity for secure access
   identity {
@@ -254,8 +243,8 @@ resource "azurerm_ai_foundry_project" "main" {
 
 # Deploy GPT-5-Chat model in AI Foundry using azapi_resource
 resource "azapi_resource" "aifoundry_deployment_gpt_5_chat" {
-  type       = "Microsoft.CognitiveServices/accounts/deployments@2023-05-01"
-  name       = "gpt-5-chat"
+  type       = "Microsoft.CognitiveServices/accounts/deployments@${var.ai_services_api_version}"
+  name       = var.gpt_model_deployment_name
   parent_id  = azurerm_ai_services.main.id
   depends_on = [
     azurerm_ai_services.main,
@@ -264,14 +253,14 @@ resource "azapi_resource" "aifoundry_deployment_gpt_5_chat" {
 
   body = {
     sku = {
-      name     = "GlobalStandard"
-      capacity = 1
+      name     = var.gpt_deployment_sku_name
+      capacity = var.gpt_deployment_sku_capacity
     }
     properties = {
       model = {
-        format  = "OpenAI"
-        name    = "gpt-5-chat"
-        version = "2025-10-03"
+        format  = var.gpt_model_format
+        name    = var.gpt_model_name
+        version = var.gpt_model_version
       }
     }
   }
@@ -380,30 +369,9 @@ resource "azurerm_storage_blob" "invoices_data" {
   depends_on = [azurerm_storage_container.invoices]
 }
 
-resource "azurerm_storage_blob" "pii_samples_data" {
-  name                   = "pii_samples.txt"
-  storage_account_name   = azurerm_storage_account.datasets.name
-  storage_container_name = azurerm_storage_container.training.name
-  type                   = "Block"
-  source                 = "${path.module}/../data/pii_samples.txt"
-  content_type           = "text/plain"
-
-  depends_on = [azurerm_storage_container.training]
-}
-
-resource "azurerm_storage_blob" "clu_training_data" {
-  name                   = "clu_training_utterances.md"
-  storage_account_name   = azurerm_storage_account.datasets.name
-  storage_container_name = azurerm_storage_container.training.name
-  type                   = "Block"
-  source                 = "${path.module}/../data/clu_training_utterances.md"
-  content_type           = "text/markdown"
-
-  depends_on = [azurerm_storage_container.training]
-}
 
 # Seamless automation: update .env file with Key Vault URI after apply
-resource "null_resource" "update_env_filee" {
+resource "null_resource" "update_env_file" {
   provisioner "local-exec" {
     command = "${path.module}/../update-env.sh"
   }

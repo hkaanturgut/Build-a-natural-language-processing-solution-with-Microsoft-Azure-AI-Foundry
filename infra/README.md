@@ -1,6 +1,6 @@
-# Galaxy Gadgets NLP Infrastructure
+# NLP AI Foundry Infrastructure
 
-This Terraform configuration creates the Azure infrastructure needed for the Galaxy Gadgets Natural Language Processing solution.
+This Terraform configuration creates the Azure infrastructure needed for the Natural Language Processing solution with Azure AI Foundry.
 
 ## 🚀 What Gets Created
 

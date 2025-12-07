@@ -8,19 +8,78 @@ subscription_id = "your-subscription-id-here"
 environment = "dev"
 
 # Azure region where resources will be deployed
-location = "East US"
+location = "East US 2"
 
 # Storage account name for datasets (must be globally unique, 3-24 chars, lowercase letters and numbers only)
-# Will store invoices, logs, and NLP models
+# Will store NLP training data, logs, and models
 storage_account_name = "stnlpdeveus001"
+
+# Storage account configuration
+storage_account_tier             = "Standard"          # Standard or Premium
+storage_account_replication_type = "LRS"               # LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS
+storage_account_kind             = "StorageV2"         # StorageV2 or BlobStorage
+min_tls_version                  = "TLS1_2"            # TLS1_0, TLS1_1, TLS1_2
+blob_soft_delete_retention_days  = 7                   # 1-365 days
+container_soft_delete_retention_days = 7               # 1-365 days
+
+# Storage Account Features
+enable_storage_https_only              = true          # Enable HTTPS only
+enable_storage_public_access           = true          # Enable public network access
+allow_storage_nested_public_access     = false         # Allow nested items to be public
+enable_blob_versioning                 = true          # Enable blob versioning
+enable_blob_change_feed                = true          # Enable blob change feed
+
+# CORS Configuration for Storage
+storage_cors_allowed_headers   = ["*"]                 # CORS allowed headers
+storage_cors_allowed_methods   = ["DELETE", "GET", "HEAD", "MERGE", "POST", "OPTIONS", "PUT", "PATCH"]  # CORS allowed methods
+storage_cors_allowed_origins   = ["*"]                 # CORS allowed origins
+storage_cors_exposed_headers   = ["*"]                 # CORS exposed headers
+storage_cors_max_age_seconds   = 0                     # CORS max age in seconds
+
+# Storage Container Names
+storage_container_invoices_name = "invoices"           # Container name for invoices
+storage_container_training_name = "training"           # Container name for training data
+storage_container_reports_name  = "reports"            # Container name for reports
+storage_container_access_type   = "private"            # Container access type (private or blob)
 
 # Azure AI Foundry workspace name
 # Used for NLP processing, document analysis, and AI model deployment
 ai_foundry_workspace_name = "aif-nlp-ai-foundry"
 
-# Key Vault name (must be globally unique, 3-24 chars, alphanumeric and hyphens)
-# Will store AI Foundry credentials and other secrets
-key_vault_name = "kv-nlp"
+# AI Services configuration
+ai_services_sku = "S0"                                  # S0, S1, S2, etc.
+
+# AI Services Network Configuration
+ai_services_public_network_access             = "Enabled"  # Enabled or Disabled
+ai_services_outbound_network_access_restricted = false     # Restrict outbound access
+ai_services_local_auth_enabled                = true       # Enable local authentication
+
+# Language Service configuration
+language_service_sku = "S"                              # F0, S, S1
+language_service_kind = "TextAnalytics"                 # TextAnalytics
+enable_language_service_public_access = true            # Enable public network access
+
+# AI Foundry configuration
+ai_foundry_public_network_access = "Enabled"            # Enabled or Disabled
+
+# Key Vault configuration
+key_vault_name = "kv-nlp"                               # Key Vault name (must be globally unique)
+key_vault_sku_name           = "standard"               # standard or premium
+key_vault_purge_protection_enabled = true               # true or false
+key_vault_soft_delete_retention_days = 90               # 7-90 days
+enable_key_vault_rbac       = true                      # Enable RBAC authorization
+enable_key_vault_public_access = true                   # Enable public network access
+
+# Model deployment configuration
+gpt_model_deployment_name = "gpt-5-chat"                # Deployment name
+gpt_model_format          = "OpenAI"                    # Model format
+gpt_model_name            = "gpt-5-chat"                # Model name
+gpt_model_version         = "2025-10-03"                # Model version
+gpt_deployment_sku_name   = "GlobalStandard"            # SKU name
+gpt_deployment_sku_capacity = 1                         # Capacity (minimum 1)
+
+# API version for Azure AI Services deployments
+ai_services_api_version = "2023-05-01"                  # API version
 
 # Tags to apply to all resources
 tags = {

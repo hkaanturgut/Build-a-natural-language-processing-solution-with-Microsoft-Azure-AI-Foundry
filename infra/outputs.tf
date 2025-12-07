@@ -29,7 +29,6 @@ output "storage_containers" {
   description = "Names of the created storage containers"
   value = {
     invoices = azurerm_storage_container.invoices.name
-    training = azurerm_storage_container.training.name
   }
 }
 
@@ -140,20 +139,6 @@ output "uploaded_data_files" {
     filename => {
       name = blob.name
       url  = blob.url
-    }
-  }
-}
-
-output "pii_and_training_data" {
-  description = "Information about PII and CLU training data files"
-  value = {
-    pii_samples_data = {
-      name = azurerm_storage_blob.pii_samples_data.name
-      url  = azurerm_storage_blob.pii_samples_data.url
-    }
-    clu_training_data = {
-      name = azurerm_storage_blob.clu_training_data.name
-      url  = azurerm_storage_blob.clu_training_data.url
     }
   }
 }

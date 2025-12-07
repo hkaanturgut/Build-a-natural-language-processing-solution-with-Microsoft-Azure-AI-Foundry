@@ -224,5 +224,8 @@ override.tf.json
 *_override.tf.json
 .terraformignore
 
+# Backend configuration (contains sensitive storage account info)
+infra/backend.hcl
+
 # Terraform cloud
 .terraform.d/
