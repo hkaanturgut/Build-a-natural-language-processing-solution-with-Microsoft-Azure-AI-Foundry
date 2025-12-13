@@ -1,6 +1,6 @@
 # Create Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-nlp-${local.location_short[var.location]}-${var.environment}-01"
+  name     = "rg-nlp-${local.location_short[var.location]}-${var.environment}-${var.resource_index}"
   location = var.location
   tags     = var.tags
 }
@@ -14,7 +14,7 @@ resource "random_string" "subdomain_suffix" {
 
 # Create Storage Account for AI Foundry
 resource "azurerm_storage_account" "datasets" {
-  name                     = "stnlp${var.environment}${local.location_short[var.location]}01"
+  name                     = "stnlp${var.environment}${local.location_short[var.location]}${var.resource_index}"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = var.storage_account_tier
@@ -91,7 +91,7 @@ resource "azurerm_storage_container" "reports" {
 
 # Deploy Azure AI Services resource
 resource "azurerm_ai_services" "main" {
-  name                = "ais-${var.environment}-${local.location_short[var.location]}-01"
+  name                = "ais-${var.environment}-${local.location_short[var.location]}-${var.resource_index}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   sku_name            = var.ai_services_sku
@@ -111,7 +111,7 @@ resource "azurerm_ai_services" "main" {
 
 # Deploy Azure Key Vault with RBAC
 resource "azurerm_key_vault" "main" {
-  name                = "kv-${var.environment}-${local.location_short[var.location]}-ai-01"
+  name                = "kv-${var.environment}-${local.location_short[var.location]}-ai-${var.resource_index}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -133,7 +133,7 @@ resource "azurerm_key_vault" "main" {
 
 
 resource "azurerm_cognitive_account" "language" {
-  name                = "lang-${var.environment}-${local.location_short[var.location]}-01"
+  name                = "lang-${var.environment}-${local.location_short[var.location]}-${var.resource_index}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   kind                = var.language_service_kind
@@ -199,7 +199,7 @@ resource "azurerm_key_vault_secret" "language_service_key" {
 
 # Deploy Azure AI Foundry
 resource "azurerm_ai_foundry" "main" {
-  name                = "aif-${var.environment}-${local.location_short[var.location]}-01"
+  name                = "aif-${var.environment}-${local.location_short[var.location]}-${var.resource_index}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -233,7 +233,7 @@ resource "azurerm_ai_foundry" "main" {
 
 # Deploy Azure AI Foundry Project
 resource "azurerm_ai_foundry_project" "main" {
-  name               = "aifp-${var.environment}-${local.location_short[var.location]}-01"
+  name               = "aifp-${var.environment}-${local.location_short[var.location]}-${var.resource_index}"
   location           = azurerm_resource_group.main.location
   ai_services_hub_id = azurerm_ai_foundry.main.id
 

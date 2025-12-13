@@ -21,6 +21,13 @@ variable "location" {
   default     = "East US 2"
 }
 
+variable "resource_index" {
+  description = "Index to append to resource names for uniqueness"
+  type        = string
+  default     = "01"
+  
+}
+
 variable "storage_account_name" {
   description = "Name of the storage account for datasets (must be globally unique)"
   type        = string
