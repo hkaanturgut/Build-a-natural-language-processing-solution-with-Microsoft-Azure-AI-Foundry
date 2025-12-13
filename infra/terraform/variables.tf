@@ -435,7 +435,7 @@ variable "bastion_subnet_prefix" {
 variable "disable_public_network_access" {
   description = "Disable public network access for all resources (require private endpoints only)"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "key_vault_allowed_ip_rules" {
