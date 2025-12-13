@@ -25,7 +25,7 @@ enable_blob_change_feed            = true
 # CORS Configuration for Storage
 storage_cors_allowed_headers = ["Authorization", "Content-Type", "x-ms-blob-type", "x-ms-version"]
 storage_cors_allowed_methods = ["GET", "HEAD", "POST", "PUT", "OPTIONS"]
-storage_cors_allowed_origins = []
+# storage_cors_allowed_origins = []
 storage_cors_exposed_headers = ["x-ms-request-id", "x-ms-version", "Date"]
 storage_cors_max_age_seconds = 3600
 
@@ -42,4 +42,4 @@ ai_foundry_workspace_name = "aif-nlp-ai-foundry-prod"
 ai_services_sku = "S0"
 
 # Key Vault configuration
-key_vault_name = "kv-nlp-prod"
+# key_vault_name = "kv-nlp-prod"
