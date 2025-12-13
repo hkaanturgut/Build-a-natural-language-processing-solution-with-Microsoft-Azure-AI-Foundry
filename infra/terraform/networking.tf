@@ -60,6 +60,24 @@ resource "azurerm_subnet" "bastion" {
   depends_on = [azurerm_virtual_network.main]
 }
 
+# Subnet for GitHub Hosted Runners
+resource "azurerm_subnet" "github_hosted_runners" {
+  name                = "github-hosted-runners"
+  resource_group_name = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes    = ["10.0.4.0/27"]
+
+  delegation {
+    name = "github-network-settings"
+    service_delegation {
+      name    = "GitHub.Network/networkSettings"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+
+  depends_on = [azurerm_virtual_network.main]
+}
+
 # ============================================================
 # NETWORK SECURITY GROUPS
 # ============================================================
