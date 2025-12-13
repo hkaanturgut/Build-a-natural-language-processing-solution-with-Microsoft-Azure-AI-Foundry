@@ -7,19 +7,18 @@ from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobServiceClient
 from azure.ai.textanalytics import TextAnalyticsClient
 from azure.core.credentials import AzureKeyCredential
+from config import Config
 
-# Load environment variables from .env file
-load_dotenv()
-BOOTSTRAP_KEY_VAULT_URI = os.getenv("KEY_VAULT_URI")
+# Initialize configuration (automatically resolves Key Vault URI)
+Config.validate(strict=True)
+
 credential = DefaultAzureCredential()
-bootstrap_client = SecretClient(vault_url=BOOTSTRAP_KEY_VAULT_URI, credential=credential)
-key_vault_uri = bootstrap_client.get_secret("key-vault-uri").value
+client_kv = Config.get_key_vault_client()
 
-# Now use the discovered Key Vault URI for all other secrets
-client_kv = SecretClient(vault_url=key_vault_uri, credential=credential)
+# Retrieve secrets from Key Vault
 gpt_5_chat_key = client_kv.get_secret("gpt-5-chat-key").value
 gpt_5_chat_endpoint = client_kv.get_secret("gpt-5-chat-endpoint").value
-storage_connection_string = client_kv.get_secret("storage-connection-string").value
+storage_connection_string = Config.get_storage_connection_string()
 
 def authenticate_client():
     ta_credential = AzureKeyCredential(gpt_5_chat_key)

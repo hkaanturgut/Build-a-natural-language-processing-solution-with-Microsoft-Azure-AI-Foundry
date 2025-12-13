@@ -376,16 +376,3 @@ resource "azurerm_storage_blob" "invoices_data" {
 }
 
 
-# Seamless automation: update .env file with Key Vault URI after apply
-resource "null_resource" "update_env_file" {
-  provisioner "local-exec" {
-    command = "${path.module}/update-env.sh"
-  }
-
-  triggers = {
-    key_vault_uri = azurerm_key_vault.main.vault_uri
-  }
-
-  depends_on = [azurerm_key_vault.main]
-}
-
