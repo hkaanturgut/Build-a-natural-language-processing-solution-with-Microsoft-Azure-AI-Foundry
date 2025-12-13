@@ -359,17 +359,15 @@ resource "azurerm_key_vault_secret" "storage_connection_string" {
   ]
 }
 
-# Generate .env file for Python applications automatically
-
 # Upload data files to appropriate storage containers
 resource "azurerm_storage_blob" "invoices_data" {
-  for_each = fileset("${path.module}/../data/invoices", "*.txt")
+  for_each = fileset("${path.module}/../../data/invoices", "*.txt")
 
   name                   = each.value
   storage_account_name   = azurerm_storage_account.datasets.name
   storage_container_name = azurerm_storage_container.invoices.name
   type                   = "Block"
-  source                 = "${path.module}/../data/invoices/${each.value}"
+  source                 = "${path.module}/../../data/invoices/${each.value}"
   content_type           = "text/plain"
 
   depends_on = [azurerm_storage_container.invoices]
