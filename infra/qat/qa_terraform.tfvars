@@ -8,26 +8,26 @@ location        = "East US 2"
 storage_account_name = "stnlpqaaeus001"
 
 # Storage account configuration
-storage_account_tier             = "Standard"
-storage_account_replication_type = "LRS"
-storage_account_kind             = "StorageV2"
-min_tls_version                  = "TLS1_2"
-blob_soft_delete_retention_days  = 14
+storage_account_tier                 = "Standard"
+storage_account_replication_type     = "LRS"
+storage_account_kind                 = "StorageV2"
+min_tls_version                      = "TLS1_2"
+blob_soft_delete_retention_days      = 14
 container_soft_delete_retention_days = 14
 
 # Storage Account Features
-enable_storage_https_only              = true
-enable_storage_public_access           = false
-allow_storage_nested_public_access     = false
-enable_blob_versioning                 = true
-enable_blob_change_feed                = true
+enable_storage_https_only          = true
+enable_storage_public_access       = false
+allow_storage_nested_public_access = false
+enable_blob_versioning             = true
+enable_blob_change_feed            = true
 
 # CORS Configuration for Storage
-storage_cors_allowed_headers   = ["Authorization", "Content-Type", "x-ms-blob-type", "x-ms-version"]
-storage_cors_allowed_methods   = ["GET", "HEAD", "POST", "PUT", "OPTIONS"]
-storage_cors_allowed_origins   = []
-storage_cors_exposed_headers   = ["x-ms-request-id", "x-ms-version", "Date"]
-storage_cors_max_age_seconds   = 3600
+storage_cors_allowed_headers = ["Authorization", "Content-Type", "x-ms-blob-type", "x-ms-version"]
+storage_cors_allowed_methods = ["GET", "HEAD", "POST", "PUT", "OPTIONS"]
+storage_cors_allowed_origins = []
+storage_cors_exposed_headers = ["x-ms-request-id", "x-ms-version", "Date"]
+storage_cors_max_age_seconds = 3600
 
 # Storage Container Names
 storage_container_invoices_name = "invoices"

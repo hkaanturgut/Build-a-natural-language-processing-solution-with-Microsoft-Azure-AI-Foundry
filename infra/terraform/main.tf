@@ -250,9 +250,9 @@ resource "azurerm_ai_foundry_project" "main" {
 
 # Deploy GPT-5-Chat model in AI Foundry using azapi_resource
 resource "azapi_resource" "aifoundry_deployment_gpt_5_chat" {
-  type       = "Microsoft.CognitiveServices/accounts/deployments@${var.ai_services_api_version}"
-  name       = var.gpt_model_deployment_name
-  parent_id  = azurerm_ai_services.main.id
+  type      = "Microsoft.CognitiveServices/accounts/deployments@${var.ai_services_api_version}"
+  name      = var.gpt_model_deployment_name
+  parent_id = azurerm_ai_services.main.id
   depends_on = [
     azurerm_ai_services.main,
     azurerm_ai_foundry.main
@@ -387,6 +387,6 @@ resource "null_resource" "update_env_file" {
     key_vault_uri = azurerm_key_vault.main.vault_uri
   }
 
-  depends_on = [ azurerm_key_vault.main ]
+  depends_on = [azurerm_key_vault.main]
 }
 

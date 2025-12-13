@@ -16,9 +16,9 @@ resource "azurerm_role_assignment" "current_user_storage_blob_contributor" {
 
 # Grant Storage Blob Data Contributor role to language service managed identity
 resource "azurerm_role_assignment" "language_storage_blob_contributor" {
-  scope              = azurerm_storage_account.datasets.id
+  scope                = azurerm_storage_account.datasets.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id       = azurerm_cognitive_account.language.identity[0].principal_id
+  principal_id         = azurerm_cognitive_account.language.identity[0].principal_id
 
   depends_on = [azurerm_cognitive_account.language]
 }
