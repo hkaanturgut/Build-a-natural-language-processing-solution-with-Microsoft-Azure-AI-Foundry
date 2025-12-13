@@ -116,14 +116,6 @@ resource "azurerm_key_vault" "main" {
   purge_protection_enabled      = var.key_vault_purge_protection_enabled
   soft_delete_retention_days    = var.key_vault_soft_delete_retention_days
 
-  # Configure network access rules
-  network_acls {
-    bypass                     = "AzureServices"
-    default_action             = "Deny"
-    ip_rules                   = var.key_vault_allowed_ip_rules
-    virtual_network_subnet_ids = var.key_vault_allowed_subnet_ids
-  }
-
   tags = var.tags
 
   depends_on = [azurerm_resource_group.main]
