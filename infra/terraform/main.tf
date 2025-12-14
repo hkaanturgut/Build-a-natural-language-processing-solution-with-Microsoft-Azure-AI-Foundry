@@ -5,13 +5,6 @@ resource "azurerm_resource_group" "main" {
   tags     = var.tags
 }
 
-# Generate random suffix for unique subdomain names
-resource "random_string" "subdomain_suffix" {
-  length  = 8
-  special = false
-  lower   = true
-}
-
 # Create Storage Account for AI Foundry
 resource "azurerm_storage_account" "datasets" {
   name                     = "stnlp${var.environment}${local.location_short[var.location]}${var.resource_index}"
@@ -133,8 +126,8 @@ resource "azurerm_ai_services" "main" {
   resource_group_name = azurerm_resource_group.main.name
   sku_name            = var.ai_services_sku
 
-  # Set custom subdomain for API access with random suffix to avoid conflicts
-  custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-${random_string.subdomain_suffix.result}"
+  # Set custom subdomain for API access (uses deterministic naming)
+  custom_subdomain_name = "ais-${var.environment}-${local.location_short[var.location]}-${substr(md5(azurerm_resource_group.main.id), 0, 8)}"
 
   # Network and authentication settings
   public_network_access              = var.disable_public_network_access ? "Disabled" : "Enabled"
@@ -143,7 +136,7 @@ resource "azurerm_ai_services" "main" {
 
   tags = var.tags
 
-  depends_on = [azurerm_resource_group.main, random_string.subdomain_suffix]
+  depends_on = [azurerm_resource_group.main]
 }
 
 # Deploy Azure Key Vault with RBAC
@@ -176,8 +169,8 @@ resource "azurerm_cognitive_account" "language" {
   kind                = var.language_service_kind
   sku_name            = var.language_service_sku
 
-  # Enable Custom features (NER, CLU) with random suffix to avoid conflicts
-  custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-${random_string.subdomain_suffix.result}"
+  # Enable Custom features (NER, CLU) with deterministic naming
+  custom_subdomain_name = "lang-${var.environment}-${local.location_short[var.location]}-${substr(md5(azurerm_resource_group.main.id), 0, 8)}"
 
   # Network settings
   public_network_access_enabled = !var.disable_public_network_access
