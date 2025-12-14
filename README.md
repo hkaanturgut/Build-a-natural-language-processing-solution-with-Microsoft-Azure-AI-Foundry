@@ -352,13 +352,16 @@ From the same management center, add the storage account using SAS token from th
 
 In order to create a Custom NER, go to to the AI project > Fine-tuning > click on + > Scroll to the bottom and select the Custom Named Entity Recognicition > Select the connected AI language resource and create
 
-<img width="1893" height="903" alt="Screenshot 2025-12-13 at 8 46 37 PM" src="https://github.com/user-attachments/assets/f2b14d96-4c73-46fd-ba80-e0e124ce9d75" />
+<img width="1906" height="888" alt="Screenshot 2025-12-13 at 9 23 17 PM" src="https://github.com/user-attachments/assets/384e2488-49c2-4715-8908-6fca30705a4e" />
+
 
 ### Step 6: Label Data
 
 In order to fine-tune your model with some entities, we need to label the data. Add labels like "InvoiceNumber" and "ProductName" then label the data.
 
 Make sure to at least label 10 documents as it's the minimum requirement and it's recommended to have at least 200 labeled entities.
+
+Make sure to Save from the top before proceeding furhter.
 
 <img width="1882" height="848" alt="Screenshot 2025-12-13 at 8 52 16 PM" src="https://github.com/user-attachments/assets/f7092f6e-1c7b-43fc-9b7c-4c4890660b08" />
 
