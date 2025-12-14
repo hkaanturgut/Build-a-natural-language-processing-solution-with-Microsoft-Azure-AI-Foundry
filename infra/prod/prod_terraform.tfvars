@@ -3,10 +3,7 @@
 subscription_id = "52513787-3db1-4afb-845e-922fd437040e"
 environment     = "prod"
 location        = "East US 2"
-resource_index = "02"
-
-# Storage account name for datasets (must be globally unique, 3-24 chars, lowercase letters and numbers only)
-storage_account_name = "stnlpprodeus001"
+resource_index = "03"
 
 # Storage account configuration
 storage_account_tier                 = "Standard"
