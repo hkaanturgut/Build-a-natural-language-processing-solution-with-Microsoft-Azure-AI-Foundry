@@ -53,6 +53,43 @@ resource "azurerm_storage_account" "datasets" {
 
   depends_on = [azurerm_resource_group.main]
 }
+
+# Generate SAS token for storage account access
+data "azurerm_storage_account_sas" "main" {
+  connection_string = azurerm_storage_account.datasets.primary_connection_string
+  https_only        = var.enable_storage_https_only
+  signed_version    = "2022-11-02"
+
+  resource_types {
+    service   = true
+    container = true
+    object    = true
+  }
+
+  services {
+    blob  = true
+    queue = true
+    table = true
+    file  = true
+  }
+
+  start  = timestamp()
+  expiry = timeadd(timestamp(), "${var.sas_token_expiry_hours}h")
+
+  permissions {
+    read    = true
+    write   = true
+    delete  = true
+    list    = true
+    add     = true
+    create  = true
+    update  = true
+    process = true
+    tag     = true
+    filter  = true
+  }
+}
+
 # Location code variable
 
 locals {
@@ -356,6 +393,19 @@ resource "azurerm_key_vault_secret" "storage_connection_string" {
   depends_on = [
     azurerm_role_assignment.current_user_kv_admin,
     azurerm_storage_account.datasets
+  ]
+}
+
+# Store SAS token in Key Vault
+resource "azurerm_key_vault_secret" "storage_sas_token" {
+  name         = "storage-sas-token"
+  value        = data.azurerm_storage_account_sas.main.sas
+  key_vault_id = azurerm_key_vault.main.id
+  tags         = var.tags
+
+  depends_on = [
+    azurerm_role_assignment.current_user_kv_admin,
+    data.azurerm_storage_account_sas.main
   ]
 }
 

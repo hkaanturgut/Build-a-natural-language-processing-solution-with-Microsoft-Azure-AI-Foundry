@@ -468,3 +468,14 @@ variable "storage_account_allowed_subnet_ids" {
   type        = list(string)
   default     = []
 }
+
+variable "sas_token_expiry_hours" {
+  description = "SAS token expiry duration in hours"
+  type        = number
+  default     = 24
+
+  validation {
+    condition     = var.sas_token_expiry_hours > 0 && var.sas_token_expiry_hours <= 8760
+    error_message = "SAS token expiry must be between 1 and 8760 hours (1 year)."
+  }
+}

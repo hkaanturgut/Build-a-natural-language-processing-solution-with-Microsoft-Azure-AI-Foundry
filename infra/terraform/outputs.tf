@@ -131,6 +131,19 @@ output "storage_connection_string" {
   sensitive   = true
 }
 
+# SAS token for secure storage access
+output "storage_sas_token" {
+  description = "SAS token for temporary storage account access"
+  value       = data.azurerm_storage_account_sas.main.sas
+  sensitive   = true
+}
+
+output "storage_sas_url_query_string" {
+  description = "Storage account blob endpoint with SAS token query string"
+  value       = "${azurerm_storage_account.datasets.primary_blob_endpoint}?${data.azurerm_storage_account_sas.main.sas}"
+  sensitive   = true
+}
+
 # Uploaded data files
 output "uploaded_data_files" {
   description = "Information about uploaded invoice data files"
