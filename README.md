@@ -45,14 +45,6 @@ This project provides an end-to-end solution for building and deploying **custom
 
 ## Prerequisites
 
-### System Requirements
-
-- **OS**: macOS, Linux, or Windows (WSL2)
-- **Python**: 3.9 or higher
-- **Terraform**: 1.6 or higher
-- **Azure CLI**: Latest version
-- **Git**: For version control
-
 ### Azure Requirements
 
 ✅ **Active Azure Subscription** with:
@@ -129,31 +121,6 @@ az role assignment create \
 | **User Access Administrator** | Assign RBAC roles to created resources |
 | **Key Vault Secrets Officer** | Create and manage secrets in Key Vault |
 
-### Clone the Repository
-
-```bash
-# Clone the repository
-git clone https://github.com/hkaanturgut/Build-a-natural-language-processing-solution-with-Azure-AI-Foundry.git
-
-# Navigate to project directory
-cd Build-a-natural-language-processing-solution-with-Azure-AI-Foundry
-
-# Verify repository structure
-ls -la
-```
-
-Expected directory structure:
-```
-.
-├── data/              # Invoice and test data
-├── infra/             # Terraform infrastructure code
-├── python/            # Python NER scripts
-├── .github/           # GitHub Actions workflows
-├── README.md          # This file
-└── Makefile           # Command shortcuts
-```
-
----
 
 ## Architecture
 
@@ -248,7 +215,6 @@ Build-a-natural-language-processing-solution-with-Azure-AI-Foundry/
 ├── README.md                          # 📖 This file - Main documentation
 ├── LICENSE                            # 📜 MIT License
 ├── .gitignore                         # Git ignore rules
-├── Makefile                           # ⚙️ Command shortcuts
 ```
 
 ### 📊 Data Directory (`data/`)
