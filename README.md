@@ -59,6 +59,7 @@ This project provides an end-to-end solution for building and deploying **custom
 - Sufficient quota for Language Service, AI Services, Storage, and Key Vault
 - Permissions to create resource groups and resources
 - Azure CLI authentication configured (`az login`)
+- Storage account with container if you prefer to storage your Terraform state file in remote.
 
 ### Create Managed Identity or Service Principal
 
@@ -154,88 +155,6 @@ Expected directory structure:
 
 ---
 
-## Quick Start
-
-### 1️⃣ Prerequisites Check
-
-```bash
-# Verify all required tools are installed
-python3 --version        # Should be 3.9+
-terraform --version      # Should be 1.6+
-az --version            # Should be latest
-git --version           # Should be latest
-
-# Verify Azure CLI authentication
-az account show
-```
-
-### 2️⃣ Set Environment Variables
-
-```bash
-# Set your Azure subscription ID
-export AZURE_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-
-# Verify it's set
-echo $AZURE_SUBSCRIPTION_ID
-```
-
-### 3️⃣ Deploy Infrastructure (Terraform)
-
-```bash
-# Navigate to infrastructure directory
-cd infra/terraform
-
-# Initialize Terraform
-terraform init
-
-# Review planned changes
-terraform plan
-
-# Deploy to Azure (review resources and type 'yes' when prompted)
-terraform apply
-```
-
-### 4️⃣ Configure Python Environment
-
-```bash
-# Navigate back to project root
-cd ../..
-
-# Create Python virtual environment
-python3 -m venv .venv
-
-# Activate virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r python/requirements.txt
-```
-
-### 5️⃣ Export Terraform Outputs
-
-```bash
-# From project root, run the update script
-./update-env.sh
-
-# Verify the .env file was created
-cat python/.env
-```
-
-### 6️⃣ Run NER Models
-
-```bash
-# Run the fine-tuned NER model
-python3 python/fine_tuned_ner.py
-
-# Or run the standard NER model
-python3 python/custom_ner.py
-
-# Or compare both models
-python3 python/model_comparison.py
-```
-
----
-
 ## Architecture
 
 ```
@@ -312,11 +231,6 @@ Build-a-natural-language-processing-solution-with-Azure-AI-Foundry/
 │   │   ├── providers.tf               # Production providers
 │   │   ├── prod_terraform.tfvars      # Production variables
 │   │   └── variables.tf               # Production variable definitions
-│   │
-│   └── qat/                           # 🧪 QAT/Staging environment
-│       ├── main.tf                    # QAT module reference
-│       ├── providers.tf               # QAT providers
-│       └── qa_terraform.tfvars        # QAT variables
 │
 ├── python/                            # 🐍 Python Application Code
 │   ├── config.py                      # Centralized configuration manager
@@ -335,9 +249,6 @@ Build-a-natural-language-processing-solution-with-Azure-AI-Foundry/
 ├── LICENSE                            # 📜 MIT License
 ├── .gitignore                         # Git ignore rules
 ├── Makefile                           # ⚙️ Command shortcuts
-├── setup.sh                           # 🚀 Initial setup script
-├── update-env.sh                      # 🔄 Export Terraform outputs to Python .env
-└── deploy-all.sh                      # 🎯 Master orchestration script
 ```
 
 ### 📊 Data Directory (`data/`)
@@ -360,11 +271,6 @@ The infrastructure is organized into three deployment environments:
 - **Purpose**: Production-grade deployment configuration
 - **Configuration**: prod_terraform.tfvars
 - **Resource naming**: `prod` environment suffix
-
-#### `qat/` - QAT/Staging Environment
-- **Purpose**: Quality assurance and staging environment
-- **Configuration**: qa_terraform.tfvars
-- **Resource naming**: `qa` environment suffix
 
 ### 🐍 Python Directory (`python/`)
 
@@ -421,37 +327,29 @@ az role assignment list --assignee <service-principal-id>
 # Should include: Contributor, User Access Administrator, Key Vault Secrets Officer
 ```
 
-### Step 3: Configure Azure Subscription
+### Step 3: Deploy Infrastructure (GitHub Actions)
+
+The infrastructure deployment is automated via GitHub Actions CI/CD pipeline. No local Terraform commands needed!
+
+**1. Ensure Service Principal is Configured in GitHub Secrets:**
+
+Navigate to your repository or environment settings:
+- **Settings** → **Secrets and variables** → **Actions**
+- Verify these secrets exist: 
+<img width="1896" height="868" alt="Screenshot 2025-12-13 at 6 47 22 PM" src="https://github.com/user-attachments/assets/9c43f0aa-0a34-4143-bed3-8351aed6849d" />
+
+
+**2. Trigger the Deployment:**
 
 ```bash
-# Set subscription ID
-export AZURE_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# Push to main branch (or open a Pull Request)
+git push origin main
 
-# Verify it's set
-echo $AZURE_SUBSCRIPTION_ID
+# OR manually trigger from GitHub Actions
+# Go to: Actions → Terraform Deploy → Run workflow → Select branch → Run workflow
 
-# (Optional) Add to ~/.bash_profile or ~/.zshrc for persistence
-echo 'export AZURE_SUBSCRIPTION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"' >> ~/.zshrc
-source ~/.zshrc
-```
+<img width="1889" height="606" alt="Screenshot 2025-12-13 at 6 55 14 PM" src="https://github.com/user-attachments/assets/ef1f675b-4e9e-4f1c-b12d-407a8c6427f8" />
 
-### Step 4: Deploy Infrastructure (Terraform)
-
-```bash
-# Navigate to Terraform directory
-cd infra/terraform
-
-# Initialize Terraform (downloads providers & modules)
-terraform init
-
-# Review planned changes
-terraform plan -var-file=terraform.tfvars.example
-
-# Create Azure resources (review changes and type 'yes' when prompted)
-terraform apply
-
-# Verify resources were created
-terraform output
 ```
 
 **Resources Created**:
@@ -463,49 +361,58 @@ terraform output
 - ✅ AI Foundry Hub & Project (Model management)
 - ✅ Network infrastructure (Public access enabled)
 
-### Step 5: Export Terraform Outputs to Python
+  <img width="1336" height="650" alt="Screenshot 2025-12-13 at 6 55 59 PM" src="https://github.com/user-attachments/assets/63e16c08-ef8c-4b8f-880f-bfab49f64c5d" />
 
-```bash
-# Return to project root
-cd ../..
 
-# Export Terraform outputs to Python .env file
-./update-env.sh
+**NOTE**: 
+Feel free to update the code and workflow based on your own networking structure. Resources are open to public for demo purposes
 
-# Verify the .env file was created with values
-cat python/.env
+### Step 4: Connect The Necessary Resources to Microsoft Foundry
 
-# Expected output:
-# KEY_VAULT_URI=https://kv-qa-eus2-ai-001.vault.azure.net/
-# LANGUAGE_SERVICE_ENDPOINT=https://lang-qa-eus2-001.cognitiveservices.azure.com/
-# LANGUAGE_SERVICE_API_VERSION=2024-11-15-preview
-# AI_FOUNDRY_PROJECT_NAME=v1
-# AI_FOUNDRY_DEPLOYMENT_NAME=v2
-# STORAGE_ACCOUNT_NAME=stnlpdeveus001
-```
+***Connect The Azure AI Language***
+Go to Management Center in the Foundry project > New Connection > Azure AI Language > Select your resource and connect it
 
-### Step 6: Set Up Python Environment
+<img width="1891" height="834" alt="Screenshot 2025-12-13 at 6 59 35 PM" src="https://github.com/user-attachments/assets/50005a29-3d24-4708-a4ad-0b6e028b8061" />
 
-```bash
-# Create Python virtual environment
-python3 -m venv .venv
+***Connect the Invoices Storage Account Container***
 
-# Activate virtual environment
-source .venv/bin/activate  # macOS/Linux
-# OR
-.venv\Scripts\activate  # Windows
+From the same management center, add the storage account using SAS token from the Key Vault.
 
-# Upgrade pip
-pip install --upgrade pip
+<img width="1764" height="726" alt="Screenshot 2025-12-13 at 8 22 39 PM" src="https://github.com/user-attachments/assets/d6be6911-6ae8-478b-be0c-f8ecac963323" />
 
-# Install project dependencies
-pip install -r python/requirements.txt
+<img width="1892" height="731" alt="Screenshot 2025-12-13 at 8 25 31 PM" src="https://github.com/user-attachments/assets/545e7a05-d8fa-4886-bfa9-8b0023efc4c6" />
 
-# Verify installation
-python3 -c "from azure.identity import DefaultAzureCredential; print('✅ Azure SDK installed')"
-```
+### Step 5: Create AI Service Fine-Tuning
 
-### Step 7: Validate Configuration
+In order to create a Custom NER, go to to the AI project > Fine-tuning > click on + > Scroll to the bottom and select the Custom Named Entity Recognicition > Select the connected AI language resource and create
+
+<img width="1893" height="903" alt="Screenshot 2025-12-13 at 8 46 37 PM" src="https://github.com/user-attachments/assets/f2b14d96-4c73-46fd-ba80-e0e124ce9d75" />
+
+### Step 6: Label Data
+
+In order to fine-tune your model with some entities, we need to label the data. Add labels like "InvoiceNumber" and "ProductName" then label the data.
+
+Make sure to at least label 10 documents as it's the minimum requirement and it's recommended to have at least 200 labeled entities.
+
+<img width="1882" height="848" alt="Screenshot 2025-12-13 at 8 52 16 PM" src="https://github.com/user-attachments/assets/f7092f6e-1c7b-43fc-9b7c-4c4890660b08" />
+
+### Step 7: Train The Model
+
+After labeling the data, it's time to train our model based on those labels.
+
+<img width="1883" height="845" alt="Screenshot 2025-12-13 at 8 52 54 PM" src="https://github.com/user-attachments/assets/87c61688-57b5-405b-9143-1791408aaa50" />
+
+### Step 8: Deploy the Model
+
+Upon training and evaluation the model, it's time to deploy it!
+
+<img width="1892" height="855" alt="Screenshot 2025-12-13 at 8 54 04 PM" src="https://github.com/user-attachments/assets/8cb7782a-1978-4ca5-b1e9-b569c934a99e" />
+
+Once the model is deployed, you can get the prediction URL along with the subscription key (ai language primary key) by clicking on the model name.
+
+<img width="1903" height="863" alt="Screenshot 2025-12-13 at 8 54 38 PM" src="https://github.com/user-attachments/assets/5e43f115-8c7c-4155-803d-bb668c262593" />
+
+### Step 4: Validate Configuration
 
 ```bash
 # Navigate to python directory
@@ -524,7 +431,7 @@ python3 -c "from config import Config; Config.validate(strict=True); Config.prin
 # ============================================================
 ```
 
-### Step 8: Run NER Models
+### Step 5: Run NER Models
 
 ```bash
 # Run fine-tuned model on test data
@@ -618,117 +525,6 @@ git push origin main
 5. **Click "Approve and run"**: Navigate to workflow run and click approval button
 6. **Terraform Apply**: Changes are applied to Azure
 7. **Verify**: Check Azure Portal that resources were updated
-
----
-
-## Environment Variable Configuration
-
-### Generated Environment Variables (`python/.env`)
-
-The `.env` file is auto-generated by `./update-env.sh` after Terraform deployment:
-
-```dotenv
-# Key Vault (Secrets Management)
-KEY_VAULT_URI=https://kv-qa-eus2-ai-001.vault.azure.net/
-
-# Language Service (NER API)
-LANGUAGE_SERVICE_ENDPOINT=https://lang-qa-eus2-001.cognitiveservices.azure.com/
-LANGUAGE_SERVICE_API_VERSION=2024-11-15-preview
-
-# AI Foundry (Project & Deployment)
-AI_FOUNDRY_PROJECT_NAME=v1
-AI_FOUNDRY_DEPLOYMENT_NAME=v2
-
-# Storage Account (Data Management)
-STORAGE_ACCOUNT_NAME=stnlpdeveus001
-
-# Azure Authentication (Used by Python scripts)
-AZURE_SUBSCRIPTION_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-AZURE_ENVIRONMENT=qa
-```
-
-### Terraform Variables
-
-Configure deployment settings via `infra/prod/prod_terraform.tfvars`:
-
-```hcl
-# Location & Environment
-location    = "East US 2"      # Azure region
-environment = "prod"          # Environment name (dev, qa, prod)
-
-# Resource Naming
-resource_name_suffix = "01"    # Unique suffix for resource names
-
-# Storage Configuration
-storage_account_tier             = "Standard"
-storage_account_replication_type = "LRS"
-storage_account_kind             = "StorageV2"
-
-# Key Vault Configuration
-key_vault_sku_name = "standard"
-enable_key_vault_rbac = true
-
-# Language Service Configuration
-language_service_sku = "S1"     # Standard tier
-language_service_kind = "TextAnalytics"
-
-# AI Services Configuration
-ai_services_sku = "S0"          # Standard tier
-ai_services_public_network_access_enabled = true
-
-# Public Access Settings
-disable_public_network_access = false  # Enable public access for Key Vault & Storage
-```
-
-### Python Configuration (`config.py`)
-
-The centralized `python/config.py` manages all configuration:
-
-#### Configuration Resolution Order
-
-1. **Environment Variables** (.env file or system variables)
-2. **Key Vault** (Retrieved using DefaultAzureCredential)
-3. **Terraform Naming Conventions** (For Key Vault URI)
-
-#### Key Vault URI Auto-Resolution
-
-If `KEY_VAULT_URI` is not in `.env`, it's automatically resolved using the naming pattern:
-
-```
-KEY_VAULT_URI = https://kv-{environment}-{region}-ai-01.vault.azure.net/
-```
-
-Example for QA environment in East US 2:
-```
-https://kv-qa-eus2-ai-001.vault.azure.net/
-```
-
-#### Usage Example
-
-```python
-from config import Config
-
-# Automatically validate and resolve all configuration
-Config.validate(strict=True)
-
-# Access configuration values
-endpoint = Config.LANGUAGE_SERVICE_ENDPOINT
-project = Config.AI_FOUNDRY_PROJECT_NAME
-key = Config.get_language_service_key()  # Retrieved from Key Vault
-
-# Print current status
-Config.print_status()
-```
-
-#### Available Configuration Methods
-
-```python
-Config.validate(strict=False)              # Validate required variables
-Config.print_status()                      # Display configuration status
-Config.get_key_vault_client()              # Get authenticated Key Vault client
-Config.get_storage_connection_string()    # Get storage connection string
-Config.get_language_service_key()         # Get Language Service API key
-```
 
 ---
 
@@ -840,48 +636,6 @@ public_network_access_enabled = true
 ✅ **Authorization**: RBAC role assignments (Contributor, Key Vault Officer)  
 ✅ **Secrets**: API keys stored in Azure Key Vault, never in code  
 ✅ **Access Logging**: Audit logs enabled for all resources  
-
-#### Network Security Groups
-
-Traffic is controlled via NSGs for each subnet:
-
-```
-Application Subnet (10.0.1.0/24)
-├── Outbound: Allow HTTPS (443) to Azure services
-├── Outbound: Allow DNS (53)
-└── Inbound: Allow from GitHub Actions runners only (if using private endpoints)
-
-Data Subnet (10.0.2.0/24)
-├── Outbound: Allow HTTPS (443) to storage endpoints
-└── Inbound: Application Subnet traffic only
-
-Management Subnet (10.0.3.0/24)
-├── Outbound: Allow to all (for Terraform operations)
-└── Inbound: Restricted to admin access
-
-GitHub Actions Runners (10.0.4.0/24)
-├── Outbound: Allow to all Azure services
-└── Inbound: Allow from GitHub Actions IP ranges
-```
-
-#### Transitioning to Private Endpoints (Future)
-
-To enable private endpoints for enhanced security:
-
-1. **Create Private Endpoints** for each service:
-   ```bash
-   # This configuration has been removed in favor of simplicity
-   # To re-enable, modify networking.tf
-   ```
-
-2. **Update Network Security Groups** to allow private endpoint traffic
-
-3. **Configure Private DNS Zones** for name resolution
-
-4. **Update Connection Strings** to use private endpoint URLs
-
----
-
 
 
 ## Troubleshooting Guide
