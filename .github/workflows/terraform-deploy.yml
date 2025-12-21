@@ -47,7 +47,7 @@ env:
 jobs:
   terraform-plan:
     name: Terraform Plan
-    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'plan')
+    if: github.event_name == 'pull_request' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'plan')
     environment: ${{ github.event.inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
 
