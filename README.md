@@ -1,6 +1,6 @@
 # Azure AI Natural Language Processing Solution
 
-A comprehensive **production-ready** end-to-end Named Entity Recognition (NER) solution that leverages Azure AI Services to extract and classify entities from invoice documents. This project demonstrates how to build, train, and deploy custom NLP models using Azure's latest AI technologies with full CI/CD automation via GitHub Actions.
+A comprehensive end-to-end Named Entity Recognition (NER) solution that leverages Azure AI Services to extract and classify entities from invoice documents. This project demonstrates how to build, train, and deploy custom NLP models using Azure's latest AI technologies with full CI/CD automation via GitHub Actions.
 
 ## 📋 Table of Contents
 
@@ -53,61 +53,10 @@ This project provides an end-to-end solution for building and deploying **custom
 
 For GitHub Actions CI/CD pipeline, you need to create a **Managed Identity** or **Service Principal** with the following RBAC roles on the subscription:
 
-#### Option 1: Using Service Principal (Recommended for GitHub Actions)
+https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-static-site-github-actions?tabs=openid#generate-deployment-credentials
 
-```bash
-# 1. Create service principal
-az ad sp create-for-rbac --name "github-actions-nlp" \
-  --role "Contributor" \
-  --scopes /subscriptions/<YOUR_SUBSCRIPTION_ID>
+<img width="1054" height="1068" alt="Screenshot 2025-12-21 at 4 23 45 PM" src="https://github.com/user-attachments/assets/e0f1c973-8268-4ad1-8690-98e3348c823d" />
 
-# Save the output (you'll need: clientId, clientSecret, subscriptionId, tenantId)
-
-# 2. Grant additional roles
-SUBSCRIPTION_ID="<YOUR_SUBSCRIPTION_ID>"
-CLIENT_ID="<SERVICE_PRINCIPAL_CLIENT_ID>"
-
-# Grant User Access Administrator
-az role assignment create \
-  --assignee $CLIENT_ID \
-  --role "User Access Administrator" \
-  --scope /subscriptions/$SUBSCRIPTION_ID
-
-# Grant Key Vault Secrets Officer
-az role assignment create \
-  --assignee $CLIENT_ID \
-  --role "Key Vault Secrets Officer" \
-  --scope /subscriptions/$SUBSCRIPTION_ID
-```
-
-#### Option 2: Using Managed Identity (For Azure VMs/Container Instances)
-
-```bash
-# Create managed identity in resource group
-az identity create \
-  --resource-group <YOUR_RG> \
-  --name nlp-managed-identity
-
-# Get the principal ID
-PRINCIPAL_ID=$(az identity show --resource-group <YOUR_RG> \
-  --name nlp-managed-identity --query principalId -o tsv)
-
-# Assign roles
-az role assignment create \
-  --assignee $PRINCIPAL_ID \
-  --role "Contributor" \
-  --scope /subscriptions/$SUBSCRIPTION_ID
-
-az role assignment create \
-  --assignee $PRINCIPAL_ID \
-  --role "User Access Administrator" \
-  --scope /subscriptions/$SUBSCRIPTION_ID
-
-az role assignment create \
-  --assignee $PRINCIPAL_ID \
-  --role "Key Vault Secrets Officer" \
-  --scope /subscriptions/$SUBSCRIPTION_ID
-```
 
 #### Required RBAC Roles
 
