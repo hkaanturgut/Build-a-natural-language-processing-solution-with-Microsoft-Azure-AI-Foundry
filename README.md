@@ -523,7 +523,10 @@ Entities found:
   - ProductName: "Premium Widget" (confidence: 0.98)
   - Date: "2024-01-15" (confidence: 0.95)
   - Amount: "$1,234.56" (confidence: 0.99)
+
 ```
+
+<img width="736" height="1049" alt="Screenshot 2025-12-21 at 3 21 26 PM" src="https://github.com/user-attachments/assets/853d7ca8-e9b3-491f-9de6-50ad0c5d40bf" />
 
 ### Running the Standard NER Model
 
