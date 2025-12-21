@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev-v1
-      - qat-v1
     paths:
       - 'infra/**'
       - '.github/workflows/terraform-deploy.yml'
@@ -13,8 +11,6 @@ on:
   pull_request:
     branches:
       - main
-      - dev-v1
-      - qat-v1
     paths:
       - 'infra/**'
 
@@ -28,15 +24,12 @@ on:
         options:
           - 'plan'
           - 'apply'
-          - 'destroy'
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'dev'
+        default: 'prod'
         type: choice
         options:
-          - 'dev'
-          - 'qat'
           - 'prod'
 
 permissions:
@@ -52,7 +45,8 @@ env:
 jobs:
   terraform-plan:
     name: Terraform Plan
-    environment: ${{ github.event.inputs.environment || 'prod' }}
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'plan')
+    environment: prod
     runs-on: ubuntu-latest
 
     steps:
@@ -60,13 +54,12 @@ jobs:
         uses: actions/checkout@v4
 
       # ----------------------------------------------------------------
-      # RESOLVE WORKING DIRECTORY BASED ON ENVIRONMENT
+      # RESOLVE WORKING DIRECTORY (always prod for main)
       # ----------------------------------------------------------------
       - name: Set working directory
         id: set-dir
         run: |
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          WORKDIR="./infra/${{ env.ENVIRONMENT }}"
+          WORKDIR="./infra/prod"
           echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
           echo "Using working directory: $WORKDIR"
 
@@ -110,7 +103,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
+          VARFILE="prod_terraform.tfvars"
           echo "Using var-file: $VARFILE"
 
           terraform plan \
@@ -148,19 +141,21 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
     needs: terraform-plan
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'prod' }}
+    environment: prod
 
     steps:
       - name: Manual Approval
+        if: github.event_name == 'push'
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
           approvers: hkaanturgut
           minimum-approvals: 1
-          issue-title: "Deploying Terraform to ${{ env.ENVIRONMENT }}"
-          issue-body: "Please approve or deny the Terraform deployment to ${{ env.ENVIRONMENT }}."
+          issue-title: "Deploying Terraform to Production"
+          issue-body: "Please approve or deny the Terraform deployment to production."
           exclude-workflow-initiator-as-approver: false
           fail-on-denial: true
           polling-interval-seconds: 10
@@ -171,8 +166,7 @@ jobs:
       - name: Set working directory
         id: set-dir
         run: |
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          WORKDIR="./infra/${{ env.ENVIRONMENT }}"
+          WORKDIR="./infra/prod"
           echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
           echo "Using working directory: $WORKDIR"
 
@@ -206,7 +200,7 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
+          VARFILE="prod_terraform.tfvars"
           echo "Applying Terraform configuration..."
 
           terraform apply \
@@ -223,4 +217,4 @@ jobs:
         if: success()
         run: |
           echo "## Terraform Apply Complete" >> $GITHUB_STEP_SUMMARY
-          echo "Infrastructure has been successfully applied to ${{ env.ENVIRONMENT }}." >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure has been successfully applied to production." >> $GITHUB_STEP_SUMMARY
