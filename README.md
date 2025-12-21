@@ -478,6 +478,9 @@ python3 model_comparison.py
 - Extraction coverage comparison
 - CSV report: `model_comparison_results_<timestamp>.csv`
 
+<img width="867" height="325" alt="Screenshot 2025-12-21 at 3 50 08 PM" src="https://github.com/user-attachments/assets/e10b76f3-93bc-4224-a9c7-f9854c19b504" />
+
+
 ### Batch Processing
 
 Process all invoices in a directory:
