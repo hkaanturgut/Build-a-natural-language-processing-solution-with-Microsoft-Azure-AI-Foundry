@@ -15,3 +15,9 @@ variable "location" {
   type        = string
   default     = "East US 2"
 }
+
+variable "resource_index" {
+  description = "Resource index to ensure unique naming"
+  type        = string
+  default     = "01"
+}

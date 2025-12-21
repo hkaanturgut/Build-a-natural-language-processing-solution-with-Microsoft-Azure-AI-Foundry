@@ -1,11 +1,12 @@
-# QAT environment configuration
+# DEV environment configuration
 
 subscription_id = "52513787-3db1-4afb-845e-922fd437040e"
 environment     = "dev"
 location        = "East US 2"
+resource_index = "03"
 
 # Storage account name for datasets (must be globally unique, 3-24 chars, lowercase letters and numbers only)
-storage_account_name = "stnlpqaaeus001"
+storage_account_name = "stnlpqaaeus003"
 
 # Storage account configuration
 storage_account_tier                 = "Standard"
