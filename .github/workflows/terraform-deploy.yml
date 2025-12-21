@@ -56,14 +56,15 @@ jobs:
         uses: actions/checkout@v4
 
       # ----------------------------------------------------------------
-      # RESOLVE WORKING DIRECTORY (always prod for main)
+      # RESOLVE WORKING DIRECTORY BASED ON ENVIRONMENT
       # ----------------------------------------------------------------
       - name: Set working directory
         id: set-dir
         run: |
-          WORKDIR="./infra/prod"
+          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          WORKDIR="./infra/$ENVIRONMENT"
           echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
-          echo "Using working directory: $WORKDIR"
+          echo "Using working directory: $WORKDIR for environment: $ENVIRONMENT"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -105,7 +106,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          VARFILE="prod_terraform.tfvars"
+          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          VARFILE="${ENVIRONMENT}_terraform.tfvars"
           echo "Using var-file: $VARFILE"
 
           terraform plan \
@@ -156,8 +158,8 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: hkaanturgut
           minimum-approvals: 1
-          issue-title: "Deploying Terraform to Production"
-          issue-body: "Please approve or deny the Terraform deployment to production."
+          issue-title: "Deploying Terraform to ${{ github.event.inputs.environment || 'dev' }}"
+          issue-body: "Please approve or deny the Terraform deployment to ${{ github.event.inputs.environment || 'dev' }}."
           exclude-workflow-initiator-as-approver: false
           fail-on-denial: true
           polling-interval-seconds: 10
@@ -168,9 +170,10 @@ jobs:
       - name: Set working directory
         id: set-dir
         run: |
-          WORKDIR="./infra/prod"
+          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          WORKDIR="./infra/$ENVIRONMENT"
           echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
-          echo "Using working directory: $WORKDIR"
+          echo "Using working directory: $WORKDIR for environment: $ENVIRONMENT"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -202,8 +205,9 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          VARFILE="prod_terraform.tfvars"
-          echo "Applying Terraform configuration..."
+          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
+          VARFILE="${ENVIRONMENT}_terraform.tfvars"
+          echo "Applying Terraform configuration to $ENVIRONMENT..."
 
           terraform apply \
             -var-file="$VARFILE" \
@@ -218,5 +222,6 @@ jobs:
       - name: Apply Status
         if: success()
         run: |
+          ENVIRONMENT="${{ github.event.inputs.environment || 'dev' }}"
           echo "## Terraform Apply Complete" >> $GITHUB_STEP_SUMMARY
-          echo "Infrastructure has been successfully applied to production." >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure has been successfully applied to $ENVIRONMENT." >> $GITHUB_STEP_SUMMARY
