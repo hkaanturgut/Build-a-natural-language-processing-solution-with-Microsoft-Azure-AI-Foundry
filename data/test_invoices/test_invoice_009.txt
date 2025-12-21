@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200009
+Date: 2025-12-05
+Customer: RenderFarm Studios
+
+Line Items:
+1. GPU Rendering Node - Qty: 16 - Unit Price: $2499.99 - Amount: $39999.84
+2. Ray Tracing Accelerator - Qty: 8 - Unit Price: $1899.50 - Amount: $15196.00
+3. 4K Display Output Module - Qty: 4 - Unit Price: $999.99 - Amount: $3999.96
+4. Real-time Visualization Suite - Qty: 1 - Unit Price: $9999.00 - Amount: $9999.00
+
+Subtotal: $69194.80
+Tax (8%): $5535.58
+Total: $74730.38

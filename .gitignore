@@ -205,3 +205,31 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Terraform
+# Ignore Terraform state files and sensitive configuration
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+# Allow environment-specific tfvars files
+!infra/prod/*.tfvars
+!infra/qat/*.tfvars
+!infra/dev/*.tfvars
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformignore
+
+# Backend configuration (contains sensitive storage account info)
+infra/backend.hcl
+
+# Terraform cloud
+.terraform.d/

@@ -1,0 +1,57 @@
+INVOICE BATCH 003
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-011
+Date: 2025-01-25
+Customer: CyberShield Pro
+Amount: $2,987.60
+Quantity: 40
+Item: Firewall Hardware
+Unit Price: $74.69
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-012
+Date: 2025-01-26
+Customer: DevOps Masters
+Amount: $1,020.00
+Quantity: 68
+Item: Server Rack 42U
+Unit Price: $15.00
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-013
+Date: 2025-01-27
+Customer: CloudPeak Solutions
+Amount: $4,275.00
+Quantity: 57
+Item: High-Speed Router
+Unit Price: $75.00
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-014
+Date: 2025-01-28
+Customer: NetFlow Analytics
+Amount: $1,350.45
+Quantity: 45
+Item: Ethernet Cable Cat6a
+Unit Price: $30.01
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-015
+Date: 2025-01-29
+Customer: TechVision Global
+Amount: $3,645.00
+Quantity: 94
+Item: Wireless Access Point
+Unit Price: $38.78
+Status: Paid

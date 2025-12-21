@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200006
+Date: 2025-12-03
+Customer: VirtualWorks Ltd
+
+Line Items:
+1. Virtual Machine License Pack - Qty: 50 - Unit Price: $49.99 - Amount: $2499.50
+2. Container Orchestration Platform - Qty: 2 - Unit Price: $999.00 - Amount: $1998.00
+3. Hypervisor Server Module - Qty: 3 - Unit Price: $2499.99 - Amount: $7499.97
+4. Storage Array Controller - Qty: 1 - Unit Price: $3999.00 - Amount: $3999.00
+
+Subtotal: $15996.47
+Tax (8%): $1279.72
+Total: $17276.19

@@ -1,0 +1,57 @@
+INVOICE BATCH 001
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-001
+Date: 2025-01-15
+Customer: TechCore Solutions
+Amount: $1,987.50
+Quantity: 25
+Item: USB-C Cables
+Unit Price: $79.50
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-002
+Date: 2025-01-16
+Customer: CloudSync Inc
+Amount: $1,850.50
+Quantity: 50
+Item: SSD 1TB NVMe
+Unit Price: $37.01
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-003
+Date: 2025-01-17
+Customer: DataFlow Systems
+Amount: $3,460.00
+Quantity: 100
+Item: Network Switch 48-Port
+Unit Price: $34.60
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-004
+Date: 2025-01-18
+Customer: SecureNet Corp
+Amount: $414.67
+Quantity: 33
+Item: Wireless Mouse
+Unit Price: $12.57
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-005
+Date: 2025-01-19
+Customer: InnovateTech Labs
+Amount: $1,243.95
+Quantity: 75
+Item: Mechanical Keyboard RGB
+Unit Price: $16.59
+Status: Overdue

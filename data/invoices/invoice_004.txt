@@ -1,0 +1,57 @@
+INVOICE BATCH 004
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-016
+Date: 2025-02-01
+Customer: AppForge Systems
+Amount: $1,434.02
+Quantity: 82
+Item: Power Supply 850W
+Unit Price: $17.49
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-017
+Date: 2025-02-02
+Customer: CloudScale Ventures
+Amount: $2,362.50
+Quantity: 63
+Item: Motherboard ATX
+Unit Price: $37.50
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-018
+Date: 2025-02-03
+Customer: DataMesh Corp
+Amount: $1,960.00
+Quantity: 109
+Item: CPU Cooler Liquid
+Unit Price: $17.98
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-019
+Date: 2025-02-04
+Customer: SyncFlow Tech
+Amount: $1,137.50
+Quantity: 50
+Item: Case Fan 120mm RGB
+Unit Price: $22.75
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-020
+Date: 2025-02-05
+Customer: VectorAI Analytics
+Amount: $2,509.50
+Quantity: 76
+Item: Graphics Card RTX
+Unit Price: $33.02
+Status: Paid

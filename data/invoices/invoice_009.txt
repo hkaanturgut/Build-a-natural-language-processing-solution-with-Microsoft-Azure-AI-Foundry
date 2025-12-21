@@ -1,0 +1,57 @@
+INVOICE BATCH 009
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-041
+Date: 2025-02-26
+Customer: SensorFlow Analytics
+Amount: $2,008.75
+Quantity: 67
+Item: Temperature Sensor
+Unit Price: $30.01
+Status: Pending
+
+Invoice #2
+----------
+Invoice Number: INV-2025-042
+Date: 2025-02-27
+Customer: IoTConnected Devices
+Amount: $2,875.00
+Quantity: 92
+Item: Motion Detector Sensor
+Unit Price: $31.25
+Status: Paid
+
+Invoice #3
+----------
+Invoice Number: INV-2025-043
+Date: 2025-02-28
+Customer: SmartHome Pioneer
+Amount: $1,830.00
+Quantity: 61
+Item: Humidity Sensor
+Unit Price: $30.00
+Status: Overdue
+
+Invoice #4
+----------
+Invoice Number: INV-2025-044
+Date: 2025-03-01
+Customer: EdgeComputing Pro
+Amount: $2,050.50
+Quantity: 82
+Item: Pressure Sensor
+Unit Price: $25.01
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-045
+Date: 2025-03-02
+Customer: WirelessSense Networks
+Amount: $1,580.00
+Quantity: 79
+Item: Proximity Sensor
+Unit Price: $20.00
+Status: Paid

@@ -1,0 +1,14 @@
+INVOICE
+Invoice Number: INV-200005
+Date: 2025-12-03
+Customer: EdgeCompute Systems
+
+Line Items:
+1. Edge Server Mini - Qty: 5 - Unit Price: $1899.99 - Amount: $9499.95
+2. IoT Gateway Device - Qty: 10 - Unit Price: $799.00 - Amount: $7990.00
+3. Industrial Sensor Bundle - Qty: 25 - Unit Price: $149.99 - Amount: $3749.75
+4. Field Programmable Gate Array - Qty: 8 - Unit Price: $649.50 - Amount: $5196.00
+
+Subtotal: $26435.70
+Tax (8%): $2114.86
+Total: $28550.56

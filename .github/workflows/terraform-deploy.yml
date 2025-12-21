@@ -1,0 +1,226 @@
+name: Terraform Infrastructure Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - dev-v1
+      - qat-v1
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform-deploy.yml'
+
+  pull_request:
+    branches:
+      - main
+      - dev-v1
+      - qat-v1
+    paths:
+      - 'infra/**'
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - 'plan'
+          - 'apply'
+          - 'destroy'
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - 'dev'
+          - 'qat'
+          - 'prod'
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+  issues: write
+
+env:
+  TERRAFORM_VERSION: '1.6.0'
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    environment: ${{ github.event.inputs.environment || 'prod' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------------
+      # RESOLVE WORKING DIRECTORY BASED ON ENVIRONMENT
+      # ----------------------------------------------------------------
+      - name: Set working directory
+        id: set-dir
+        run: |
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          WORKDIR="./infra/${{ env.ENVIRONMENT }}"
+          echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
+          echo "Using working directory: $WORKDIR"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+        continue-on-error: true
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RG_NAME }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -upgrade
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
+          echo "Using var-file: $VARFILE"
+
+          terraform plan \
+            -var-file="$VARFILE" \
+            -out=tfplan \
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        continue-on-error: false
+
+      - name: Generate Plan Summary
+        if: steps.plan.outcome == 'success'
+        run: |
+          terraform show tfplan > tfplan.txt
+          echo "## Terraform Plan Summary" >> $GITHUB_STEP_SUMMARY
+          terraform show tfplan >> $GITHUB_STEP_SUMMARY
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+
+      - name: Upload Plan Artifact
+        if: steps.plan.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-${{ github.run_id }}
+          path: ${{ steps.set-dir.outputs.working_dir }}/tfplan
+          retention-days: 5
+
+      - name: Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: |
+          echo "::error::Terraform plan failed"
+          exit 1
+
+  terraform-apply:
+    name: Terraform Apply
+    needs: terraform-plan
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'prod' }}
+
+    steps:
+      - name: Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: hkaanturgut
+          minimum-approvals: 1
+          issue-title: "Deploying Terraform to ${{ env.ENVIRONMENT }}"
+          issue-body: "Please approve or deny the Terraform deployment to ${{ env.ENVIRONMENT }}."
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+          polling-interval-seconds: 10
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set working directory
+        id: set-dir
+        run: |
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          WORKDIR="./infra/${{ env.ENVIRONMENT }}"
+          echo "working_dir=$WORKDIR" >> $GITHUB_OUTPUT
+          echo "Using working directory: $WORKDIR"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RG_NAME }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -upgrade
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Apply
+        run: |
+          VARFILE="${{ env.ENVIRONMENT }}_terraform.tfvars"
+          echo "Applying Terraform configuration..."
+
+          terraform apply \
+            -var-file="$VARFILE" \
+            -auto-approve
+        working-directory: ${{ steps.set-dir.outputs.working_dir }}
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply Status
+        if: success()
+        run: |
+          echo "## Terraform Apply Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure has been successfully applied to ${{ env.ENVIRONMENT }}." >> $GITHUB_STEP_SUMMARY

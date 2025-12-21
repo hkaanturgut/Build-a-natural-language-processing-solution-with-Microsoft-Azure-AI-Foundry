@@ -1,0 +1,57 @@
+INVOICE BATCH 012
+=================
+
+Invoice #1
+----------
+Invoice Number: INV-2025-056
+Date: 2025-03-13
+Customer: BlockchainSecurity
+Amount: $1,333.95
+Quantity: 95
+Item: Hardware Wallet
+Unit Price: $14.05
+Status: Paid
+
+Invoice #2
+----------
+Invoice Number: INV-2025-057
+Date: 2025-03-14
+Customer: CryptoVault Solutions
+Amount: $1,127.50
+Quantity: 49
+Item: Cold Storage Device
+Unit Price: $23.00
+Status: Pending
+
+Invoice #3
+----------
+Invoice Number: INV-2025-058
+Date: 2025-03-15
+Customer: DisBlockchain Corp
+Amount: $2,678.00
+Quantity: 107
+Item: Key Management Module
+Unit Price: $25.03
+Status: Paid
+
+Invoice #4
+----------
+Invoice Number: INV-2025-059
+Date: 2025-03-16
+Customer: DistributedLedger Inc
+Amount: $1,705.00
+Quantity: 62
+Item: Node Server Box
+Unit Price: $27.50
+Status: Pending
+
+Invoice #5
+----------
+Invoice Number: INV-2025-060
+Date: 2025-03-17
+Customer: SmartContract Platforms
+Amount: $1,950.00
+Quantity: 78
+Item: Validator Node Kit
+Unit Price: $25.00
+Status: Paid
