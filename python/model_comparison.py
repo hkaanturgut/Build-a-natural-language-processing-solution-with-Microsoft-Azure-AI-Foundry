@@ -32,9 +32,9 @@ storage_connection_string = Config.get_storage_connection_string()
 
 # Fine-tuned model configuration
 LANGUAGE_SERVICE_ENDPOINT = Config.LANGUAGE_SERVICE_ENDPOINT
-API_VERSION = "2024-11-15-preview"
-PROJECT_NAME = "test-v3"
-DEPLOYMENT_NAME = "test"
+API_VERSION = Config.LANGUAGE_SERVICE_API_VERSION
+PROJECT_NAME = Config.AI_FOUNDRY_PROJECT_NAME
+DEPLOYMENT_NAME = Config.AI_FOUNDRY_DEPLOYMENT_NAME
 
 def fetch_invoices_from_local(test_invoices_dir="../data/test_invoices"):
     """Fetch all test invoice files from local filesystem."""
