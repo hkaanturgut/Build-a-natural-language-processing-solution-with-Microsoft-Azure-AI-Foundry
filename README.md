@@ -6,18 +6,14 @@ A comprehensive **production-ready** end-to-end Named Entity Recognition (NER) s
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
 - [Architecture](#architecture)
-- [Technologies & Resources](#technologies--resources)
 - [Project Structure](#project-structure)
 - [Step-by-Step Setup Guide](#step-by-step-setup-guide)
-- [GitHub Actions Workflow](#github-actions-workflow)
-- [Configuration](#configuration)
-- [Usage](#usage)
+- [Usage Guide](#usage-guide)
 - [Network Security](#network-security)
-- [Troubleshooting](#troubleshooting)
-- [Key Features](#key-features)
 - [Contributing](#contributing)
+- [Support & Documentation](#support--documentation)
+- [License](#license)
 
 ---
 
