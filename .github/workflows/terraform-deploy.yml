@@ -27,10 +27,12 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'prod'
+        default: 'dev'
         type: choice
         options:
+          - 'dev'
           - 'prod'
+          
 
 permissions:
   contents: read
@@ -40,13 +42,13 @@ permissions:
 
 env:
   TERRAFORM_VERSION: '1.6.0'
-  ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
 
 jobs:
   terraform-plan:
     name: Terraform Plan
     if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'plan')
-    environment: prod
+    environment: ${{ github.event.inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -144,7 +146,7 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
     needs: terraform-plan
     runs-on: ubuntu-latest
-    environment: prod
+    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       - name: Manual Approval
