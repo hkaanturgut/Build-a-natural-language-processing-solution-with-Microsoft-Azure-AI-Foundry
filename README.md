@@ -143,6 +143,10 @@ Build-a-natural-language-processing-solution-with-Azure-AI-Foundry/
 │   │   ├── providers.tf               # Production providers
 │   │   ├── prod_terraform.tfvars      # Production variables
 │   │   └── variables.tf               # Production variable definitions
+│   │
+│   └── az-cli/                        # 🔧 Azure CLI Scripts
+│       ├── create-spn-federated-creds.bash  # Create SPN with OIDC federated credentials
+│       └── assign-rbac-roles-spn.bash       # Assign required RBAC roles to SPN
 │
 ├── python/                            # 🐍 Python Application Code
 │   ├── config.py                      # Centralized configuration manager
@@ -182,6 +186,40 @@ The infrastructure is organized into three deployment environments:
 - **Purpose**: Production-grade deployment configuration
 - **Configuration**: prod_terraform.tfvars
 - **Resource naming**: `prod` environment suffix
+
+#### `az-cli/` - Azure CLI Setup Scripts
+
+**Purpose**: Shell scripts to create and configure the Service Principal (SPN) required for GitHub Actions CI/CD with OIDC authentication.
+
+##### 1. Create SPN with Federated Credentials
+
+```bash
+chmod +x infra/az-cli/create-spn-federated-creds.bash
+bash infra/az-cli/create-spn-federated-creds.bash
+```
+
+This script:
+- Creates an Azure AD **App Registration** and **Service Principal**
+- Configures **federated identity credentials** for GitHub Actions OIDC
+- Uses entity type `environment` scoped to the `dev` environment
+- Outputs the `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID` values needed as GitHub secrets
+
+##### 2. Assign RBAC Roles to the SPN
+
+```bash
+chmod +x infra/az-cli/assign-rbac-roles-spn.bash
+bash infra/az-cli/assign-rbac-roles-spn.bash
+```
+
+This script assigns the following roles at the subscription scope:
+
+| Role | Purpose |
+|------|---------|
+| **Contributor** | Create and manage Azure resources (Storage, Key Vault, AI Services) |
+| **User Access Administrator** | Assign RBAC roles to created resources |
+| **Key Vault Secrets Officer** | Create and manage secrets in Key Vault |
+
+> **Note**: Run `create-spn-federated-creds.bash` first, then `assign-rbac-roles-spn.bash`. Update the `SPN_CLIENT_ID` variable in the RBAC script with the Client ID output from the first script.
 
 ### 🐍 Python Directory (`python/`)
 
