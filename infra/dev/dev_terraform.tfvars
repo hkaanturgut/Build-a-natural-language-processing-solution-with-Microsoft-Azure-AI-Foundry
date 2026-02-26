@@ -3,7 +3,7 @@
 subscription_id = "52513787-3db1-4afb-845e-922fd437040e"
 environment     = "dev"
 location        = "East US 2"
-resource_index = "03"
+resource_index = "00"
 
 # Storage account configuration
 storage_account_tier                 = "Standard"

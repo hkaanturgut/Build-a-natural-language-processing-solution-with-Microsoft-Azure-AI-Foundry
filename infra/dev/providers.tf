@@ -19,7 +19,11 @@ terraform {
   }
 
   backend "azurerm" {
-    use_oidc = true
+    use_oidc             = true
+    resource_group_name  = "rg-cc-terraform"
+    storage_account_name = "stccterraformstates01"
+    container_name       = "dev"
+    key                  = "dev.terraform.tfstate"
   }
 }
 
@@ -27,6 +31,7 @@ terraform {
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
+  use_oidc        = true
   subscription_id = var.subscription_id
 }
 
