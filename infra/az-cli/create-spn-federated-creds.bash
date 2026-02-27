@@ -11,7 +11,7 @@ set -euo pipefail
 # ---------------------
 # Variables
 # ---------------------
-APP_NAME="spn-github-nlp-dev-test"
+APP_NAME="spn-github-nlp-dev-missisauga-dotnet"  # Change this to a unique name for your app registration
 SUBSCRIPTION_ID="52513787-3db1-4afb-845e-922fd437040e"
 
 # GitHub Details

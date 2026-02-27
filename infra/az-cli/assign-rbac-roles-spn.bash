@@ -1,6 +1,6 @@
 # Set variables
 SUBSCRIPTION_ID="52513787-3db1-4afb-845e-922fd437040e"
-SPN_CLIENT_ID="cfbe9921-267a-4f31-87bf-c5771971c029"
+SPN_CLIENT_ID="9d2cd39a-a347-4664-a9d0-6c1bf7c597c8"
 
 # 1. Contributor
 az role assignment create \
